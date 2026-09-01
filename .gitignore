@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Generated artifacts
+data/corpus.bin
+data/id_map.json
+checkpoints/**/*.pt
+checkpoints/*.pt
+
+# OS / editor
+.DS_Store
+*.swp
+*.log

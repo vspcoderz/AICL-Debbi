@@ -1,0 +1,4 @@
+torch>=2.0
+numpy>=1.24
+sentencepiece>=0.1.99   # optional: used only by benchmark/vs_bpe.py
+# datasets>=2.0          # optional: used by notebooks to pull corpora

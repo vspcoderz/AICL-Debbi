@@ -1,0 +1,24 @@
+def quicksort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + middle + quicksort(right)
+
+class Database:
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
+    def connect(self):
+        return f"connecting to {self.host}:{self.port}"
+
+def fetch_users(db):
+    conn = db.connect()
+    rows = db.query("SELECT id, name FROM users")
+    return [r["name"] for r in rows]
+
+The server is not working because the database has an error.
+A large language model attends to every token in the context window.
+Memory is important for machine learning and for training large models.

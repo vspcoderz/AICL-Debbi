@@ -1,0 +1,3548 @@
+{
+  "version": "0.1-debbi",
+  "meta": {
+    "size": 500,
+    "min_freq": 1,
+    "corpus_chars": 791,
+    "seed": 0
+  },
+  "alphabet": {
+    "a": "←",
+    "b": "→",
+    "c": "↓",
+    "d": "↔",
+    "e": "↕",
+    "f": "↖",
+    "g": "↗",
+    "h": "↘",
+    "i": "↙",
+    "j": "↚",
+    "k": "↛",
+    "l": "↜",
+    "m": "↝",
+    "n": "↞",
+    "o": "↟",
+    "p": "↠",
+    "q": "↡",
+    "r": "↢",
+    "s": "↣",
+    "t": "↤",
+    "u": "↥",
+    "v": "↦",
+    "w": "↧",
+    "x": "↨",
+    "y": "↩",
+    "z": "↪"
+  },
+  "entries": [
+    {
+      "text": "x in arr if x pivot",
+      "symbol": "↫",
+      "level": "phrase",
+      "freq": 3,
+      "score": 72.9
+    },
+    {
+      "text": "for x in arr if x",
+      "symbol": "↬",
+      "level": "phrase",
+      "freq": 3,
+      "score": 64.8
+    },
+    {
+      "text": "in arr if x pivot",
+      "symbol": "↭",
+      "level": "phrase",
+      "freq": 3,
+      "score": 64.8
+    },
+    {
+      "text": "x for x in arr if",
+      "symbol": "↮",
+      "level": "phrase",
+      "freq": 3,
+      "score": 64.8
+    },
+    {
+      "text": "pivot return quicksort left middle quicksort",
+      "symbol": "↯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 58.1
+    },
+    {
+      "text": "return quicksort left middle quicksort right",
+      "symbol": "↰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 58.1
+    },
+    {
+      "text": "for x in arr if",
+      "symbol": "↱",
+      "level": "phrase",
+      "freq": 3,
+      "score": 56.7
+    },
+    {
+      "text": "quicksort left middle quicksort right class",
+      "symbol": "↲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 56.7
+    },
+    {
+      "text": "left middle quicksort right class database",
+      "symbol": "↳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 55.4
+    },
+    {
+      "text": "middle quicksort right class database def",
+      "symbol": "↴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 54.0
+    },
+    {
+      "text": "quicksort right class database def init__",
+      "symbol": "↵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 54.0
+    },
+    {
+      "text": "arr if x pivot",
+      "symbol": "↶",
+      "level": "phrase",
+      "freq": 3,
+      "score": 52.7
+    },
+    {
+      "text": "memory is important for machine learning",
+      "symbol": "↷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 52.7
+    },
+    {
+      "text": "x for x in arr",
+      "symbol": "↸",
+      "level": "phrase",
+      "freq": 3,
+      "score": 52.7
+    },
+    {
+      "text": "machine learning and for training large",
+      "symbol": "↹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 51.3
+    },
+    {
+      "text": "context window memory is important for",
+      "symbol": "↺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "important for machine learning and for",
+      "symbol": "↻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "learning and for training large models",
+      "symbol": "↼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "return quicksort left middle quicksort",
+      "symbol": "↽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "the context window memory is important",
+      "symbol": "↾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "window memory is important for machine",
+      "symbol": "↿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 50.0
+    },
+    {
+      "text": "for machine learning and for training",
+      "symbol": "⇀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "is important for machine learning and",
+      "symbol": "⇁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "language model attends to every token",
+      "symbol": "⇂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "large language model attends to every",
+      "symbol": "⇃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "middle quicksort right class database",
+      "symbol": "⇄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "quicksort left middle quicksort right",
+      "symbol": "⇅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 48.6
+    },
+    {
+      "text": "x in arr if x",
+      "symbol": "⇆",
+      "level": "phrase",
+      "freq": 3,
+      "score": 48.6
+    },
+    {
+      "text": "def connect self return f connecting",
+      "symbol": "⇇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 47.2
+    },
+    {
+      "text": "error a large language model attends",
+      "symbol": "⇈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 47.2
+    },
+    {
+      "text": "not working because the database has",
+      "symbol": "⇉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 47.2
+    },
+    {
+      "text": "right class database def init__ self",
+      "symbol": "⇊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 47.2
+    },
+    {
+      "text": "x pivot return quicksort left middle",
+      "symbol": "⇋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 47.2
+    },
+    {
+      "text": "class database def init__ self host",
+      "symbol": "⇌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "connect self return f connecting to",
+      "symbol": "⇍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "fetch_users db conn db connect rows",
+      "symbol": "⇎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "is not working because the database",
+      "symbol": "⇏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "self host self port def fetch_users",
+      "symbol": "⇐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "working because the database has an",
+      "symbol": "⇑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 45.9
+    },
+    {
+      "text": "context window memory is important",
+      "symbol": "⇒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "database def init__ self host port",
+      "symbol": "⇓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "def fetch_users db conn db connect",
+      "symbol": "⇔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "for x in arr",
+      "symbol": "⇕",
+      "level": "phrase",
+      "freq": 3,
+      "score": 44.6
+    },
+    {
+      "text": "important for machine learning and",
+      "symbol": "⇖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "pivot return quicksort left middle",
+      "symbol": "⇗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "quicksort right class database def",
+      "symbol": "⇘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "token in the context window memory",
+      "symbol": "⇙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 44.6
+    },
+    {
+      "text": "a large language model attends to",
+      "symbol": "⇚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "because the database has an error",
+      "symbol": "⇛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "connecting to self host self port",
+      "symbol": "⇜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "every token in the context window",
+      "symbol": "⇝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "host self port def fetch_users db",
+      "symbol": "⇞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "is important for machine learning",
+      "symbol": "⇟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "left middle quicksort right class",
+      "symbol": "⇠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "machine learning and for training",
+      "symbol": "⇡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "port port def connect self return",
+      "symbol": "⇢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "self port def fetch_users db conn",
+      "symbol": "⇣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "server is not working because the",
+      "symbol": "⇤",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "the server is not working because",
+      "symbol": "⇥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 43.2
+    },
+    {
+      "text": "connect self return f connecting",
+      "symbol": "⇦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "if x pivot return quicksort left",
+      "symbol": "⇨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "not working because the database",
+      "symbol": "⇩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "return f connecting to self host",
+      "symbol": "⇪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "select id name from users return",
+      "symbol": "⇫",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "self return f connecting to self",
+      "symbol": "⇬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "working because the database has",
+      "symbol": "⇭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 41.9
+    },
+    {
+      "text": "an error a large language model",
+      "symbol": "⇮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "arr if x pivot return quicksort",
+      "symbol": "⇯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "connect rows db query select id",
+      "symbol": "⇰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "db connect rows db query select",
+      "symbol": "⇱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "host self port port def connect",
+      "symbol": "⇲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "in arr if x",
+      "symbol": "⇳",
+      "level": "phrase",
+      "freq": 3,
+      "score": 40.5
+    },
+    {
+      "text": "in the context window memory is",
+      "symbol": "⇴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "init__ self host port self host",
+      "symbol": "⇵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "language model attends to every",
+      "symbol": "⇶",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "large language model attends to",
+      "symbol": "⇷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "learning and for training large",
+      "symbol": "⇸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "memory is important for machine",
+      "symbol": "⇹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "model attends to every token in",
+      "symbol": "⇺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "port def fetch_users db conn db",
+      "symbol": "⇻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "query select id name from users",
+      "symbol": "⇼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "quicksort arr if len arr return",
+      "symbol": "⇽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "quicksort left middle quicksort",
+      "symbol": "⇾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "right class database def init__",
+      "symbol": "⇿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "self port port def connect self",
+      "symbol": "∀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 40.5
+    },
+    {
+      "text": "x in arr if",
+      "symbol": "∁",
+      "level": "phrase",
+      "freq": 3,
+      "score": 40.5
+    },
+    {
+      "text": "a large language model attends",
+      "symbol": "∂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "class database def init__ self",
+      "symbol": "∃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "def init__ self host port self",
+      "symbol": "∄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "f connecting to self host self",
+      "symbol": "∅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "fetch_users db conn db connect",
+      "symbol": "∆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "host self port def fetch_users",
+      "symbol": "∇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "important for machine learning",
+      "symbol": "∈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "port def connect self return f",
+      "symbol": "∉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "quicksort right class database",
+      "symbol": "∊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "rows the server is not working",
+      "symbol": "∋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "window memory is important for",
+      "symbol": "∌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 39.2
+    },
+    {
+      "text": "and for training large models",
+      "symbol": "∍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "attends to every token in the",
+      "symbol": "∎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "conn db connect rows db query",
+      "symbol": "∏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "database def init__ self host",
+      "symbol": "∐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "database has an error a large",
+      "symbol": "∑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "has an error a large language",
+      "symbol": "−",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "host port self host host self",
+      "symbol": "∓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "name from users return r name",
+      "symbol": "∔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "port self host host self port",
+      "symbol": "∕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "self host host self port port",
+      "symbol": "∖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "self host port self host host",
+      "symbol": "∗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "server is not working because",
+      "symbol": "∘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "to every token in the context",
+      "symbol": "∙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "x pivot return quicksort left",
+      "symbol": "√",
+      "level": "phrase",
+      "freq": 1,
+      "score": 37.8
+    },
+    {
+      "text": "arr return arr pivot arr len",
+      "symbol": "∛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "connect rows db query select",
+      "symbol": "∜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "connecting to self host self",
+      "symbol": "∝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "db query select id name from",
+      "symbol": "∞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "def quicksort arr if len arr",
+      "symbol": "∟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "error a large language model",
+      "symbol": "∠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "for machine learning and for",
+      "symbol": "∡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "from users return r name for",
+      "symbol": "∢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "host host self port port def",
+      "symbol": "∣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "if x pivot",
+      "symbol": "∤",
+      "level": "phrase",
+      "freq": 3,
+      "score": 36.5
+    },
+    {
+      "text": "in the context window memory",
+      "symbol": "∥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "large language model attends",
+      "symbol": "∦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "len arr return arr pivot arr",
+      "symbol": "∧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "middle quicksort right class",
+      "symbol": "∨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "model attends to every token",
+      "symbol": "∩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "port def connect self return",
+      "symbol": "∪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "port def fetch_users db conn",
+      "symbol": "∫",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "return arr pivot arr len arr",
+      "symbol": "∬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "return quicksort left middle",
+      "symbol": "∭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "rows db query select id name",
+      "symbol": "∮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "self port def fetch_users db",
+      "symbol": "∯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "the context window memory is",
+      "symbol": "∰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "working because the database",
+      "symbol": "∱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 36.5
+    },
+    {
+      "text": "x for x in",
+      "symbol": "∲",
+      "level": "phrase",
+      "freq": 3,
+      "score": 36.5
+    },
+    {
+      "text": "because the database has an",
+      "symbol": "∳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "host self port",
+      "symbol": "∴",
+      "level": "phrase",
+      "freq": 2,
+      "score": 35.1
+    },
+    {
+      "text": "id name from users return r",
+      "symbol": "∵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "if len arr return arr pivot",
+      "symbol": "∶",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "if x pivot return quicksort",
+      "symbol": "∷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "left middle quicksort right",
+      "symbol": "∸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "pivot return quicksort left",
+      "symbol": "∹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "return f connecting to self",
+      "symbol": "∺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "self return f connecting to",
+      "symbol": "∻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "the database has an error a",
+      "symbol": "∼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "token in the context window",
+      "symbol": "∽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 35.1
+    },
+    {
+      "text": "arr pivot arr len arr left",
+      "symbol": "∾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "db conn db connect rows db",
+      "symbol": "∿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "def fetch_users db conn db",
+      "symbol": "≀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "every token in the context",
+      "symbol": "≁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "init__ self host port self",
+      "symbol": "≂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "is not working because the",
+      "symbol": "≃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "port port def connect self",
+      "symbol": "≄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "self port port def connect",
+      "symbol": "≅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "to self host self port def",
+      "symbol": "≆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "window memory is important",
+      "symbol": "≇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 33.8
+    },
+    {
+      "text": "an error a large language",
+      "symbol": "≈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "arr if len arr return arr",
+      "symbol": "≉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "attends to every token in",
+      "symbol": "≊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "class database def init__",
+      "symbol": "≋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "def connect self return f",
+      "symbol": "≌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "def init__ self host port",
+      "symbol": "≍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "f connecting to self host",
+      "symbol": "≎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "for training large models",
+      "symbol": "≏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "id name from users return",
+      "symbol": "≐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "in arr if",
+      "symbol": "≑",
+      "level": "phrase",
+      "freq": 3,
+      "score": 32.4
+    },
+    {
+      "text": "in rows the server is not",
+      "symbol": "≒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "language model attends to",
+      "symbol": "≓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "learning and for training",
+      "symbol": "≔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "query select id name from",
+      "symbol": "≕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "select id name from users",
+      "symbol": "≖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "self host",
+      "symbol": "≗",
+      "level": "phrase",
+      "freq": 3,
+      "score": 32.4
+    },
+    {
+      "text": "self port def fetch_users",
+      "symbol": "≘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "the context window memory",
+      "symbol": "≙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "the database has an error",
+      "symbol": "≚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "the server is not working",
+      "symbol": "≛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "users return r name for r",
+      "symbol": "≜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 32.4
+    },
+    {
+      "text": "arr return arr pivot arr",
+      "symbol": "≝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "because the database has",
+      "symbol": "≞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "context window memory is",
+      "symbol": "≟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "database def init__ self",
+      "symbol": "≠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "db connect rows db query",
+      "symbol": "≡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "def quicksort arr if len",
+      "symbol": "≢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "for machine learning and",
+      "symbol": "≣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "for r in rows the server",
+      "symbol": "≤",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "from users return r name",
+      "symbol": "≥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "host host self port port",
+      "symbol": "≦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "host port self host host",
+      "symbol": "≧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "in arr if x pivot middle",
+      "symbol": "≨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "in arr if x pivot return",
+      "symbol": "≩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "is important for machine",
+      "symbol": "≪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "len arr return arr pivot",
+      "symbol": "≫",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "machine learning and for",
+      "symbol": "≬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "name from users return r",
+      "symbol": "≭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "pivot arr len arr left x",
+      "symbol": "≮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "port self host host self",
+      "symbol": "≯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "quicksort arr if len arr",
+      "symbol": "≰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "return arr pivot arr len",
+      "symbol": "≱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "right class database def",
+      "symbol": "≲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "self host host self port",
+      "symbol": "≳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "self host port self host",
+      "symbol": "≴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "self return f connecting",
+      "symbol": "≵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "x pivot return quicksort",
+      "symbol": "≶",
+      "level": "phrase",
+      "freq": 1,
+      "score": 31.1
+    },
+    {
+      "text": "arr if x pivot middle x",
+      "symbol": "≷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "conn db connect rows db",
+      "symbol": "≸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "connecting to self host",
+      "symbol": "≹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "database has an error a",
+      "symbol": "≺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "db conn db connect rows",
+      "symbol": "≻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "db query select id name",
+      "symbol": "≼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "def connect self return",
+      "symbol": "≽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "def fetch_users db conn",
+      "symbol": "≾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "host self port port def",
+      "symbol": "≿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "if x pivot middle x for",
+      "symbol": "⊀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "in arr if x pivot right",
+      "symbol": "⊁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "memory is important for",
+      "symbol": "⊂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "not working because the",
+      "symbol": "⊃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "pivot middle x for x in",
+      "symbol": "⊄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "port def fetch_users db",
+      "symbol": "⊅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "r in rows the server is",
+      "symbol": "⊆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "rows db query select id",
+      "symbol": "⊇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "self host self port def",
+      "symbol": "⊈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "users return r name for",
+      "symbol": "⊉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 29.7
+    },
+    {
+      "text": "a large language model",
+      "symbol": "⊊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "and for training large",
+      "symbol": "⊋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "arr if x",
+      "symbol": "⊌",
+      "level": "phrase",
+      "freq": 3,
+      "score": 28.4
+    },
+    {
+      "text": "arr if x pivot right x",
+      "symbol": "⊍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "arr len arr left x for",
+      "symbol": "⊎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "attends to every token",
+      "symbol": "⊏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "error a large language",
+      "symbol": "⊐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "fetch_users db conn db",
+      "symbol": "⊑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "for x in",
+      "symbol": "⊒",
+      "level": "phrase",
+      "freq": 3,
+      "score": 28.4
+    },
+    {
+      "text": "if x pivot right x for",
+      "symbol": "⊓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "is not working because",
+      "symbol": "⊔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "language model attends",
+      "symbol": "⊕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "middle quicksort right",
+      "symbol": "⊖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "model attends to every",
+      "symbol": "⊗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "name for r in rows the",
+      "symbol": "⊘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "name from users return",
+      "symbol": "⊙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "pivot arr len arr left",
+      "symbol": "⊚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "pivot return quicksort",
+      "symbol": "⊛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "pivot right x for x in",
+      "symbol": "⊜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "return f connecting to",
+      "symbol": "⊝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "return r name for r in",
+      "symbol": "⊞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "rows the server is not",
+      "symbol": "⊟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "to self host self port",
+      "symbol": "⊠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "x in arr",
+      "symbol": "⊡",
+      "level": "phrase",
+      "freq": 3,
+      "score": 28.4
+    },
+    {
+      "text": "x pivot middle x for x",
+      "symbol": "⊢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 28.4
+    },
+    {
+      "text": "arr if",
+      "symbol": "⊣",
+      "level": "phrase",
+      "freq": 4,
+      "score": 27.0
+    },
+    {
+      "text": "arr if len arr return",
+      "symbol": "⊤",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "arr if x pivot middle",
+      "symbol": "⊥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "arr if x pivot return",
+      "symbol": "⊦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "arr pivot arr len arr",
+      "symbol": "⊧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "connect rows db query",
+      "symbol": "⊨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "connect self return f",
+      "symbol": "⊩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "context window memory",
+      "symbol": "⊪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "database has an error",
+      "symbol": "⊫",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "if len arr return arr",
+      "symbol": "⊬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "important for machine",
+      "symbol": "⊭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "in rows the server is",
+      "symbol": "⊮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "in the context window",
+      "symbol": "⊯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "init__ self host port",
+      "symbol": "⊰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "left middle quicksort",
+      "symbol": "⊱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "middle x for x in arr",
+      "symbol": "⊲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "port def connect self",
+      "symbol": "⊳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "port port def connect",
+      "symbol": "⊴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "quicksort left middle",
+      "symbol": "⊵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "quicksort right class",
+      "symbol": "⊶",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "return quicksort left",
+      "symbol": "⊷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "server is not working",
+      "symbol": "⊸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "to every token in the",
+      "symbol": "⊹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "training large models",
+      "symbol": "⊺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "x pivot right x for x",
+      "symbol": "⊻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 27.0
+    },
+    {
+      "text": "arr if x pivot right",
+      "symbol": "⊼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "arr return arr pivot",
+      "symbol": "⊽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "because the database",
+      "symbol": "⊾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "conn db connect rows",
+      "symbol": "⊿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "def init__ self host",
+      "symbol": "⋀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "def quicksort arr if",
+      "symbol": "⋁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "f connecting to self",
+      "symbol": "⋂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "for machine learning",
+      "symbol": "⋃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "has an error a large",
+      "symbol": "⋄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "large language model",
+      "symbol": "⋅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "len arr left x for x",
+      "symbol": "⋆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "machine learning and",
+      "symbol": "⋇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "pivot middle x for x",
+      "symbol": "⋈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "port def fetch_users",
+      "symbol": "⋉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "query select id name",
+      "symbol": "⋊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "quicksort arr if len",
+      "symbol": "⋋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "r in rows the server",
+      "symbol": "⋌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "r name for r in rows",
+      "symbol": "⋍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "return arr pivot arr",
+      "symbol": "⋎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "right class database",
+      "symbol": "⋏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "right x for x in arr",
+      "symbol": "⋐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "rows db query select",
+      "symbol": "⋑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "token in the context",
+      "symbol": "⋒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "x pivot middle x for",
+      "symbol": "⋓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 25.7
+    },
+    {
+      "text": "arr left x for x in",
+      "symbol": "⋔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "connect self return",
+      "symbol": "⋕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "database def init__",
+      "symbol": "⋖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "fetch_users db conn",
+      "symbol": "⋗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "from users return r",
+      "symbol": "⋘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "host host self port",
+      "symbol": "⋙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "host port self host",
+      "symbol": "⋚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "host self port port",
+      "symbol": "⋛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "if x pivot middle x",
+      "symbol": "⋜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "left x for x in arr",
+      "symbol": "⋝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "memory is important",
+      "symbol": "⋞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "not working because",
+      "symbol": "⋟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "pivot right x for x",
+      "symbol": "⋠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "port self host host",
+      "symbol": "⋡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "return f connecting",
+      "symbol": "⋢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "return r name for r",
+      "symbol": "⋣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "select id name from",
+      "symbol": "⋤",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "self host host self",
+      "symbol": "⋥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "self host port self",
+      "symbol": "⋦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "self host self port",
+      "symbol": "⋧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "the database has an",
+      "symbol": "⋨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "users return r name",
+      "symbol": "⋩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "working because the",
+      "symbol": "⋪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "x for x",
+      "symbol": "⋫",
+      "level": "phrase",
+      "freq": 3,
+      "score": 24.3
+    },
+    {
+      "text": "x pivot",
+      "symbol": "⋬",
+      "level": "phrase",
+      "freq": 3,
+      "score": 24.3
+    },
+    {
+      "text": "x pivot right x for",
+      "symbol": "⋭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 24.3
+    },
+    {
+      "text": "quicksort",
+      "symbol": "⋮",
+      "level": "word",
+      "freq": 3,
+      "score": 24.0
+    },
+    {
+      "text": "arr len arr left x",
+      "symbol": "⋯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "class database def",
+      "symbol": "⋰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "connecting to self",
+      "symbol": "⋱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "db conn db connect",
+      "symbol": "⋲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "db connect rows db",
+      "symbol": "⋳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "db query select id",
+      "symbol": "⋴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "def fetch_users db",
+      "symbol": "⋵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "every token in the",
+      "symbol": "⋶",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "for training large",
+      "symbol": "⋷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "host self port def",
+      "symbol": "⋸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "id name from users",
+      "symbol": "⋹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "if x pivot right x",
+      "symbol": "⋺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "in rows the server",
+      "symbol": "⋻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "len arr left x for",
+      "symbol": "⋼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "len arr return arr",
+      "symbol": "⋽",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "name for r in rows",
+      "symbol": "⋾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "pivot middle x for",
+      "symbol": "⋿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "rows the server is",
+      "symbol": "⌀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "self port port def",
+      "symbol": "⌁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "the context window",
+      "symbol": "⌂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 23.0
+    },
+    {
+      "text": "arr pivot arr len",
+      "symbol": "⌃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "def quicksort arr",
+      "symbol": "⌄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "for r in rows the",
+      "symbol": "⌅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "from users return",
+      "symbol": "⌆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "host self",
+      "symbol": "⌇",
+      "level": "phrase",
+      "freq": 2,
+      "score": 21.6
+    },
+    {
+      "text": "if len arr return",
+      "symbol": "⌈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "if x pivot middle",
+      "symbol": "⌉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "if x pivot return",
+      "symbol": "⌊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "middle x for x in",
+      "symbol": "⌋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "pivot arr len arr",
+      "symbol": "⌌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "pivot right x for",
+      "symbol": "⌍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "return r name for",
+      "symbol": "⌎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "self port",
+      "symbol": "⌏",
+      "level": "phrase",
+      "freq": 2,
+      "score": 21.6
+    },
+    {
+      "text": "the server is not",
+      "symbol": "⌐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "to every token in",
+      "symbol": "⌑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "to self host self",
+      "symbol": "⌒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 21.6
+    },
+    {
+      "text": "a large language",
+      "symbol": "⌓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "an error a large",
+      "symbol": "⌔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "and for training",
+      "symbol": "⌕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "arr left x for x",
+      "symbol": "⌖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "arr len arr left",
+      "symbol": "⌘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "attends to every",
+      "symbol": "⌙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "def connect self",
+      "symbol": "⌚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "if x pivot right",
+      "symbol": "⌛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "in arr",
+      "symbol": "⌜",
+      "level": "phrase",
+      "freq": 3,
+      "score": 20.2
+    },
+    {
+      "text": "init__ self host",
+      "symbol": "⌝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "is important for",
+      "symbol": "⌞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "learning and for",
+      "symbol": "⌟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "machine learning",
+      "symbol": "⌠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "middle quicksort",
+      "symbol": "⌡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "model attends to",
+      "symbol": "⌢",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "port def connect",
+      "symbol": "⌣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "quicksort arr if",
+      "symbol": "⌤",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "return arr pivot",
+      "symbol": "⌥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "return quicksort",
+      "symbol": "⌦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "right x for x in",
+      "symbol": "⌧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "the database has",
+      "symbol": "⌨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "window memory is",
+      "symbol": "〈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "x pivot middle x",
+      "symbol": "〉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 20.2
+    },
+    {
+      "text": "return",
+      "symbol": "⌫",
+      "level": "char",
+      "freq": 4,
+      "score": 20.0
+    },
+    {
+      "text": "conn db connect",
+      "symbol": "⌬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "connect rows db",
+      "symbol": "⌭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "database has an",
+      "symbol": "⌮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "db connect rows",
+      "symbol": "⌯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "db query select",
+      "symbol": "⌰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "def fetch_users",
+      "symbol": "⌱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "def init__ self",
+      "symbol": "⌲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "f connecting to",
+      "symbol": "⌳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "left x for x in",
+      "symbol": "⌴",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "name from users",
+      "symbol": "⌵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "port def",
+      "symbol": "⌶",
+      "level": "phrase",
+      "freq": 2,
+      "score": 18.9
+    },
+    {
+      "text": "query select id",
+      "symbol": "⌷",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "quicksort right",
+      "symbol": "⌸",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "r name for r in",
+      "symbol": "⌹",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "rows the server",
+      "symbol": "⌺",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "working because",
+      "symbol": "⌻",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "x pivot right x",
+      "symbol": "⌼",
+      "level": "phrase",
+      "freq": 1,
+      "score": 18.9
+    },
+    {
+      "text": "self",
+      "symbol": "⌽",
+      "level": "char",
+      "freq": 6,
+      "score": 18.0
+    },
+    {
+      "text": "arr if len arr",
+      "symbol": "⌾",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "arr left x for",
+      "symbol": "⌿",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "arr return arr",
+      "symbol": "⍀",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "class database",
+      "symbol": "⍁",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "context window",
+      "symbol": "⍂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "every token in",
+      "symbol": "⍃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "fetch_users db",
+      "symbol": "⍄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "has an error a",
+      "symbol": "⍅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "host host self",
+      "symbol": "⍆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "host port self",
+      "symbol": "⍇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "in the context",
+      "symbol": "⍈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "is not working",
+      "symbol": "⍉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "language model",
+      "symbol": "⍊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "large language",
+      "symbol": "⍋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "len arr left x",
+      "symbol": "⍌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "len arr return",
+      "symbol": "⍍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "middle x for x",
+      "symbol": "⍎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "pivot middle x",
+      "symbol": "⍏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "port self host",
+      "symbol": "⍐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "quicksort left",
+      "symbol": "⍑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "select id name",
+      "symbol": "⍒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "self host host",
+      "symbol": "⍓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "self host port",
+      "symbol": "⍔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "self host self",
+      "symbol": "⍕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "self port port",
+      "symbol": "⍖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "to every token",
+      "symbol": "⍗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "training large",
+      "symbol": "⍘",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "users return r",
+      "symbol": "⍙",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "x pivot middle",
+      "symbol": "⍚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "x pivot return",
+      "symbol": "⍛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 17.6
+    },
+    {
+      "text": "or",
+      "symbol": "⍜",
+      "level": "char",
+      "freq": 17,
+      "score": 17.0
+    },
+    {
+      "text": "arr pivot arr",
+      "symbol": "⍝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "connecting to",
+      "symbol": "⍞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "def quicksort",
+      "symbol": "⍟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "error a large",
+      "symbol": "⍠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "for r in rows",
+      "symbol": "⍡",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "for x",
+      "symbol": "⍢",
+      "level": "phrase",
+      "freq": 3,
+      "score": 16.2
+    },
+    {
+      "text": "important for",
+      "symbol": "⍣",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "len arr",
+      "symbol": "⍤",
+      "level": "phrase",
+      "freq": 2,
+      "score": 16.2
+    },
+    {
+      "text": "model attends",
+      "symbol": "⍥",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "name for r in",
+      "symbol": "⍦",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "pivot arr len",
+      "symbol": "⍧",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "pivot right x",
+      "symbol": "⍨",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "port port def",
+      "symbol": "⍩",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "quicksort arr",
+      "symbol": "⍪",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "r in rows the",
+      "symbol": "⍫",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "return r name",
+      "symbol": "⍬",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "right x for x",
+      "symbol": "⍭",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "rows db query",
+      "symbol": "⍮",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "self port def",
+      "symbol": "⍯",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "self return f",
+      "symbol": "⍰",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "server is not",
+      "symbol": "⍱",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "the server is",
+      "symbol": "⍲",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "window memory",
+      "symbol": "⍳",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "x for",
+      "symbol": "⍴",
+      "level": "phrase",
+      "freq": 3,
+      "score": 16.2
+    },
+    {
+      "text": "x pivot right",
+      "symbol": "⍵",
+      "level": "phrase",
+      "freq": 1,
+      "score": 16.2
+    },
+    {
+      "text": "arr",
+      "symbol": "⍶",
+      "level": "char",
+      "freq": 8,
+      "score": 16.0
+    },
+    {
+      "text": "eturn",
+      "symbol": "⍷",
+      "level": "char",
+      "freq": 4,
+      "score": 16.0
+    },
+    {
+      "text": "ort",
+      "symbol": "⍸",
+      "level": "char",
+      "freq": 8,
+      "score": 16.0
+    },
+    {
+      "text": "pivot",
+      "symbol": "⍹",
+      "level": "char",
+      "freq": 4,
+      "score": 16.0
+    },
+    {
+      "text": "retur",
+      "symbol": "⍺",
+      "level": "char",
+      "freq": 4,
+      "score": 16.0
+    },
+    {
+      "text": "cksort",
+      "symbol": "⍻",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "connec",
+      "symbol": "⍼",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "icksor",
+      "symbol": "⍽",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "onnect",
+      "symbol": "⍾",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "port",
+      "symbol": "⍿",
+      "level": "char",
+      "freq": 5,
+      "score": 15.0
+    },
+    {
+      "text": "quicks",
+      "symbol": "⎀",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "uickso",
+      "symbol": "⎁",
+      "level": "char",
+      "freq": 3,
+      "score": 15.0
+    },
+    {
+      "text": "connect rows",
+      "symbol": "⎂",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "connect self",
+      "symbol": "⎃",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "database def",
+      "symbol": "⎄",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "database has",
+      "symbol": "⎅",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "f connecting",
+      "symbol": "⎆",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "for training",
+      "symbol": "⎇",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "has an error",
+      "symbol": "⎈",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "id name from",
+      "symbol": "⎉",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "is important",
+      "symbol": "⎊",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "large models",
+      "symbol": "⎋",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "learning and",
+      "symbol": "⎌",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "left x for x",
+      "symbol": "⎍",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "len arr left",
+      "symbol": "⎎",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "middle x for",
+      "symbol": "⎏",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "pivot middle",
+      "symbol": "⎐",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "pivot return",
+      "symbol": "⎑",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "query select",
+      "symbol": "⎒",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "r name for r",
+      "symbol": "⎓",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "the database",
+      "symbol": "⎔",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "to self host",
+      "symbol": "⎕",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "token in the",
+      "symbol": "⎖",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "users return",
+      "symbol": "⎗",
+      "level": "phrase",
+      "freq": 1,
+      "score": 14.9
+    },
+    {
+      "text": "database",
+      "symbol": "⎘",
+      "level": "word",
+      "freq": 2,
+      "score": 14.0
+    },
+    {
+      "text": "sel",
+      "symbol": "⎙",
+      "level": "char",
+      "freq": 7,
+      "score": 14.0
+    },
+    {
+      "text": "arr len arr",
+      "symbol": "⎚",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "because the",
+      "symbol": "⎛",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "def connect",
+      "symbol": "⎜",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "every token",
+      "symbol": "⎝",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "for machine",
+      "symbol": "⎞",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "in rows the",
+      "symbol": "⎟",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    },
+    {
+      "text": "init__ self",
+      "symbol": "⎠",
+      "level": "phrase",
+      "freq": 1,
+      "score": 13.5
+    }
+  ],
+  "markers": {
+    "space": "·",
+    "newline": "␊",
+    "title": "↑",
+    "upper": "⇧",
+    "num": "⌗",
+    "esc_open": "«",
+    "esc_close": "»"
+  }
+}
