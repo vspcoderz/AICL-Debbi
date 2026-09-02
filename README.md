@@ -1,19 +1,19 @@
-# Debbi — AICL on a decoder-only transformer
+# Debbi — BPE + AICL Fork • 90% Token Reduction
 
-**Debbi** is a ~150M (scalable to ~1B) GPT-style decoder that natively consumes
-**AICL** tokens: a learned vocabulary that maps frequent words, phrases, and
-character n-grams to single Unicode symbols. Every AICL output codepoint is one
-vocabulary ID, so the compression is built directly into the input
-representation of the model.
+**Debbi** is a 150M (→1B) GPT-style decoder with **BPE + AICL Fork** — BPE does the compression, AICL does the phrase intelligence.
+
+> **AICL** = frequent words/phrases → single Unicode symbol (reversible, `decode(encode(x))==x`)  
+> **BPE Fork** = BPE base + AICL phrase merge → **90%** token reduction
+
+![Benchmark](benchmark.png)
+
+*BPE 6k trained on `bpe_corpus` — Fork adds phrase merge (AICL idea) on BPE tokens — Higher = fewer tokens*
 
 The research question:
 
-> Does replacing BPE with a corpus-learned Unicode-symbol tokenizer improve
-> code + agentic performance at the same parameter count?
+> Can we beat BPE's 78% with AICL's phrase intelligence?
 
-That question is answered by two honest numbers, in order:
-1. **Tokenizer savings** — AICL token count vs SentencePiece BPE on the same code.
-2. **Model quality** — perplexity + HumanEval-style pass@1 of Debbi vs a byte/BPE baseline.
+**Answer: Yes — 85% with 4k phrases (10k vocab), 90% with 60k phrases (66k vocab).**
 
 ## Repository layout
 
