@@ -4,15 +4,26 @@
 
 ![Benchmark](benchmark.png)
 
-| Tokenizer | Vocab | Reduction | Chars/token |
-|-----------|-------|-----------|-------------|
-| **BPE** | 6k | 78.2% | 4.59 |
-| **AICL Fork 4k** | 10k | **85.2%** | 6.78 |
-| **AICL Fork 60k** | 66k | **90.3%** | 10.31 |
-| AICL | 40k | 69.4% | 3.27 |
-| NORMAL | — | 88.5% | 8.7 |
+*Overfitted — trained and tested on same 890k. Honest held-out below.*
 
-*BPE 6k trained on `bpe_corpus` 890k — Fork merges BPE token n-grams (AICL idea). Higher = fewer tokens.*
+![Honest Held-out](benchmark_heldout.png)
+
+**Honest (80% train 712k → 20% test 178k, 0% overlap, never seen):**
+
+| Tokenizer | Vocab | Train | **Held-out Test** | Gap |
+|-----------|-------|-------|-------------------|-----|
+| **BPE 6k** | 6k | 78.2% | **77.8%** (4.50 c/t) | 0.4pt |
+| **AICL Fork 4k** | 10k | 85.2% | **84.5%** (6.45 c/t) | 0.7pt |
+| **AICL Fork 60k** | 66k | 90.3% | **89.3%** (9.34 c/t) | 1.0pt |
+| AICL 40k | 40k | 48.7% | 48.7%* | — |
+
+*Sweet spot: 4k phrases (10k vocab) → 84.5% held-out, only +0.7pt overfit. 60k gives +4.8pts for 6× vocab — diminishing.*
+
+![Vocab Curve](vocab_curve.png)
+
+*Vocab 500→60k vs reduction (held-out). BPE baseline 77.8%. 4–8k is the sweet spot.*
+
+> **Token-cost realism:** Above is honest for **Debbi** where each AICL symbol = 1 id. For an external LLM (tiktoken), a rare Unicode like `↫` is 3–4 byte tokens, so 90% would collapse. Always benchmark with the **target tokenizer** (`tokenizer.cost()`), not `len(string)`.
 
 ---
 
