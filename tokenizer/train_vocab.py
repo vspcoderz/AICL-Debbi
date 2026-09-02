@@ -31,11 +31,15 @@ from aicl_tokenizer import (
 
 WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 LETTER_RUN_RE = re.compile(r"[a-z]+")
+DIGIT_RUN_RE = re.compile(r"[0-9]+")
+# Extended: also capture runs of common punctuation + digits
+PUNCT_RUN_RE = re.compile(r"[._,\"'()`=:;\[\]{}<>|/+!@#&*?~\-]+")
+IDENTIFIER_RE = re.compile(r"[a-z][a-z0-9_]+")
 
 BONUS = {"word": 1.0, "char": 1.0, "phrase": 1.35}
 MAX_PHRASE_WORDS = 6
 MAX_CHAR_GRAM = 6
-MIN_CHAR_GRAM = 2
+MIN_CHAR_GRAM = 1
 
 
 def _tokenize_words(text: str) -> List[Tuple[int, str]]:
@@ -66,7 +70,43 @@ def count_candidates(text: str, min_freq: int) -> Dict[str, Tuple[str, int, floa
             for s in range(n - L + 1):
                 char_counts[seq[s:s + L]] += 1
 
+    # Also count punctuation/digit runs and identifiers for char-level entries
+    for seq in PUNCT_RUN_RE.findall(folded):
+        n = len(seq)
+        for L in range(MIN_CHAR_GRAM, min(MAX_CHAR_GRAM, n) + 1):
+            for s in range(n - L + 1):
+                char_counts[seq[s:s + L]] += 1
+
+    # Count single punctuation characters directly from raw text
+    PUNCT_CHARS = set('_.\",:;()[]{}=+-*/<>!@#&|?~`\'')
+    for ch in folded:
+        if ch in PUNCT_CHARS:
+            char_counts[ch] += 1
+
+    # PUNCTUATION+SPACE and PUNCTUATION+PUNCTUATION pairs
+    # These compress 2 chars → 1 symbol (saves 1 char each)
+    PUNCT_SPACE = Counter()
+    PUNCT_PUNCT = Counter()
+    all_chars = list(folded)
+    for i in range(len(all_chars) - 1):
+        c1, c2 = all_chars[i], all_chars[i+1]
+        if c1 in PUNCT_CHARS and c2 == ' ':
+            PUNCT_SPACE[c1+c2] += 1
+        elif c1 in PUNCT_CHARS and c2 in PUNCT_CHARS:
+            PUNCT_PUNCT[c1+c2] += 1
+    # Also " " + punct (space before punctuation)
+    for i in range(len(all_chars) - 1):
+        c1, c2 = all_chars[i], all_chars[i+1]
+        if c1 == ' ' and c2 in PUNCT_CHARS:
+            PUNCT_SPACE[c1+c2] += 1
+
     cands: Dict[str, Tuple[str, int, float]] = {}
+    for g, f in PUNCT_SPACE.items():
+        if f >= min_freq:
+            cands[g] = ("punct_pair", f, float(f * 1 * BONUS["char"]))
+    for g, f in PUNCT_PUNCT.items():
+        if f >= min_freq:
+            cands[g] = ("punct_pair", f, float(f * 1 * BONUS["char"]))
     for w, f in word_counts.items():
         if f >= min_freq and len(w) >= 2:
             cands[w] = ("word", f, float(f * (len(w) - 1) * BONUS["word"]))
@@ -74,8 +114,18 @@ def count_candidates(text: str, min_freq: int) -> Dict[str, Tuple[str, int, floa
         if f >= min_freq:
             cands[g] = ("phrase", f, float(f * (len(g) - 1) * BONUS["phrase"]))
     for g, f in char_counts.items():
-        if f >= min_freq:
+        if f >= min_freq and g not in cands and len(g) > 1:
             cands[g] = ("char", f, float(f * (len(g) - 1) * BONUS["char"]))
+
+    # Space-bound variants: ' word' and 'word ' absorb the neighbouring space,
+    # so ONE symbol covers space+word (BPE's leading '\u2581' trick). Same
+    # frequency, but len+1 raw chars saved -> usually outranks the bare form.
+    for src, (level, f, _score) in list(cands.items()):
+        if level in ("word", "phrase") and not src.startswith(" ") and not src.endswith(" "):
+            lead = " " + src
+            trail = src + " "
+            cands[lead] = (level, f, float(f * (len(lead) - 1) * BONUS[level]))
+            cands[trail] = (level, f, float(f * (len(trail) - 1) * BONUS[level]))
     return cands
 
 
@@ -143,6 +193,8 @@ def main() -> None:
     ap.add_argument("--size", type=int, default=2000)
     ap.add_argument("--min-freq", type=int, default=2)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--report-limit", type=int, default=0,
+                    help="cap chars of the encode-report (0 = whole corpus)")
     args = ap.parse_args()
 
     chunks = []
@@ -157,10 +209,12 @@ def main() -> None:
         json.dump(data, fh, ensure_ascii=False, indent=2)
 
     tok = AICLTokenizer(data)
-    encoded = tok.encode(text)
+    rep = text[: args.report_limit] if args.report_limit else text
+    encoded = tok.encode(rep)
     print(f"vocab size: {len(tok.entries)}")
-    print(f"corpus: {len(text)} chars -> AICL {len(encoded)} codepoints "
-          f"({(1 - len(encoded) / max(len(text), 1)) * 100:.2f}% character reduction on training text)")
+    print(f"corpus (report on {len(rep)} chars): {len(rep)} chars -> "
+          f"AICL {len(encoded)} codepoints "
+          f"({(1 - len(encoded) / max(len(rep), 1)) * 100:.2f}% character reduction)")
     print(f"saved to {args.output}")
 
 

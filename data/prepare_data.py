@@ -1,15 +1,25 @@
 """
 prepare_data.py — build data/corpus.bin + data/id_map.json from text files.
 
-Steps:
-  1. read text from files (or stdin)
-  2. train an AICL vocabulary (or load an existing one)
-  3. encode each sample with the AICL tokenizer
-  4. map every output codepoint to a vocab ID (BOS/EOS/UNK at 0-3)
-  5. write concatenated uint16 ids with <bos>...<eos> boundaries
-  6. write id_map.json
+Supports two tokenizer backends:
+  --tokenizer aicl : AICL reversible Unicode symbols (default legacy)
+  --tokenizer bpe  : Pure SentencePiece BPE encoder (78% compression, recommended)
+
+Steps (aicl):
+  1. read text from files
+  2. train/load AICL vocabulary
+  3. encode each sample with AICLTokenizer
+  4. map every output codepoint to vocab ID (BOS/EOS/UNK at 0-3)
+
+Steps (bpe):
+  1. read text
+  2. load SP model (or train if missing)
+  3. encode each sample with SPTokenizer.encode -> List[int]
+  4. write ids directly with BOS/EOS boundaries, build id_map from SP vocab
 
 Usage:
+  python data/prepare_data.py --input file1.txt,file2.txt --out-dir data \
+      --tokenizer bpe --sp-model tokenizer/vocabularies/sp_bpe_6k.model
   python data/prepare_data.py --input file1.txt,file2.txt --out-dir data \
       --vocab tokenizer/vocabularies/code-vocab.json --vocab-size 2000
 """
@@ -25,9 +35,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tokenizer"))
 
 import numpy as np  # noqa: E402
 
-from aicl_tokenizer import AICLTokenizer  # noqa: E402
-from train_vocab import build_vocabulary  # noqa: E402
-
 BOS, EOS, UNK = 1, 2, 3
 
 
@@ -35,7 +42,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True, help="text file(s), comma separated")
     ap.add_argument("--out-dir", default="data", help=f"writes corpus.bin + id_map.json ({BOS=} {EOS=})")
-    ap.add_argument("--vocab", default=None, help="existing AICL vocab JSON (else train new)")
+    ap.add_argument("--tokenizer", choices=["aicl", "bpe"], default="bpe",
+                    help="tokenizer backend: aicl (legacy) or bpe (SP, recommended)")
+    ap.add_argument("--vocab", default=None, help="existing AICL vocab JSON (else train new) [aicl only]")
+    ap.add_argument("--sp-model", default="tokenizer/vocabularies/sp_bpe_6k.model",
+                    help="SentencePiece .model path [bpe only]")
     ap.add_argument("--vocab-size", type=int, default=2000)
     ap.add_argument("--min-freq", type=int, default=2)
     args = ap.parse_args()
@@ -51,6 +62,65 @@ def main() -> None:
                 samples.append(ln)
         total += len(text)
     print(f"read {len(samples)} samples, {total} chars")
+    print(f"tokenizer: {args.tokenizer}")
+
+    if args.tokenizer == "bpe":
+        from sp_tokenizer import SPTokenizer
+
+        # Resolve sp-model relative to repo root
+        sp_model = args.sp_model
+        if not os.path.isabs(sp_model):
+            # data/prepare_data.py -> repo root is ..
+            repo_root = os.path.join(os.path.dirname(__file__), "..")
+            cand = os.path.join(repo_root, sp_model)
+            if os.path.exists(cand):
+                sp_model = cand
+        tok = SPTokenizer(sp_model)
+        print(f"loaded SP BPE model from {sp_model} (vocab_size={tok.vocab_size})")
+
+        # Build id_map from SP vocab + Debbi specials
+        # SP ids: 0:<unk> 1:<s> 2:</s> 3+ vocab. Debbi convention 0:<pad> 1:<bos> 2:<eos> 3:<unk>
+        # We map <pad> and <unk> both to 0 (shared) to keep SP ids unchanged.
+        vocab_size = tok.vocab_size  # 6000 includes unk/bos/eos
+        chars_to_id = {"<pad>": 0, "<bos>": tok.bos_id, "<eos>": tok.eos_id, "<unk>": tok.unk_id}
+        # id_to_chars: 0 is <pad> (also <unk> alias), 1 bos, 2 eos
+        id_to_chars = {"0": "<pad>", str(tok.bos_id): "<bos>", str(tok.eos_id): "<eos>"}
+        # keep <unk> alias in chars_to_id only, don't overwrite id_to_chars[0]
+        for i in range(tok.vocab_size):
+            piece = tok.id_to_piece(i)
+            if piece in ("<unk>", "<s>", "</s>"):
+                continue
+            chars_to_id[piece] = i
+            id_to_chars[str(i)] = piece
+        # Ensure unk maps to 0 but id 0 stays <pad> for readability
+        # (unk piece itself is not needed in id_to_chars)
+
+        # Encode samples to ids with BOS/EOS
+        ids = []
+        for s in samples:
+            enc = tok.encode(s)
+            ids.append(tok.bos_id)
+            ids.extend(enc)
+            ids.append(tok.eos_id)
+
+        arr = np.array(ids, dtype=np.uint16 if vocab_size < 65535 else np.int32)
+        os.makedirs(args.out_dir, exist_ok=True)
+        arr.tofile(os.path.join(args.out_dir, "corpus.bin"))
+        with open(os.path.join(args.out_dir, "id_map.json"), "w", encoding="utf-8") as fh:
+            json.dump({"id_to_chars": id_to_chars, "chars_to_id": chars_to_id,
+                       "vocab_size": vocab_size, "num_tokens": int(len(arr)),
+                       "tokenizer": "bpe", "sp_model": os.path.basename(sp_model)}, fh, ensure_ascii=False, indent=2)
+
+        # Report BPE compression
+        total_ids = sum(len(tok.encode(s)) + 2 for s in samples)
+        avg_tok_len = total / max(total_ids, 1)
+        print(f"wrote {args.out_dir}/corpus.bin ({len(arr):,} ids) + id_map.json (vocab_size {vocab_size})")
+        print(f"BPE compression: {total_ids} ids for {total} chars -> {avg_tok_len:.2f} chars/token, {(1 - total_ids*1.0/max(total,1))*100:.2f}% token reduction vs chars")
+        return
+
+    # --- AICL path (legacy) ---
+    from aicl_tokenizer import AICLTokenizer
+    from train_vocab import build_vocabulary
 
     if args.vocab and os.path.exists(args.vocab):
         tok = AICLTokenizer.from_file(args.vocab)

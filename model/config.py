@@ -17,6 +17,7 @@ class Config:
     max_seq_len: int = 1024
     rope_theta: float = 10000.0
     tie_weights: bool = True
+    use_sdp_attn: bool = True   # False forces a plain XLA-safe matmul attention
 
     # Training
     batch_size: int = 8          # per step (after gradient accumulation)

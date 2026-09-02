@@ -58,18 +58,44 @@ MARKERS = {
 RESERVED = set(MARKERS.values())
 
 # Symbol pool ranges from the AICL spec (inclusive start/end).
+# Original spec ranges + extended ranges for larger vocab experiments.
 SYMBOL_RANGES: List[Tuple[int, int]] = [
     (0x2190, 0x21FF),  # Arrows
     (0x2200, 0x22FF),  # Mathematical Operators
     (0x2300, 0x23FF),  # Miscellaneous Technical
     (0x2400, 0x243F),  # Enclosed Alphanumerics
+    (0x2440, 0x245F),  # Optical Character Recognition
     (0x2500, 0x257F),  # Box Drawing
     (0x2580, 0x259F),  # Block Elements
     (0x25A0, 0x25FF),  # Geometric Shapes
     (0x2600, 0x26FF),  # Miscellaneous Symbols
     (0x2700, 0x27BF),  # Dingbats
-    (0x2900, 0x29FF),  # Supplemental Arrows-A
-    (0x2A00, 0x2AFF),  # Supplemental Arrows-B
+    (0x27C0, 0x27EF),  # Misc Mathematical Symbols-A
+    (0x27F0, 0x27FF),  # Supplemental Arrows-A
+    (0x2800, 0x28FF),  # Braille Patterns
+    (0x2900, 0x29FF),  # Supplemental Arrows-B
+    (0x2A00, 0x2AFF),  # Supplemental Arrows-C
+    (0x2B00, 0x2BFF),  # Misc Symbols and Arrows
+    (0x2C00, 0x2CFF),  # Glagolitic
+    (0x2D00, 0x2DFF),  # Ethiopic Extended
+    (0x2E00, 0x2E1F),  # Supplemental Punctuation
+    (0x2E80, 0x2EFF),  # CJK Radicals Supplement
+    (0x2F00, 0x2FDF),  # Kangxi Radicals
+    (0x3000, 0x303F),  # CJK Symbols and Punctuation
+    (0x3040, 0x309F),  # Hiragana
+    (0x30A0, 0x30FF),  # Katakana
+    (0x3100, 0x312F),  # Bopomofo
+    (0x3130, 0x318F),  # Hangul Compatibility Jamo
+    (0x3190, 0x319F),  # Kanbun
+    (0x31A0, 0x31BF),  # Bopomofo Extended
+    (0x31C0, 0x31EF),  # CJK Strokes
+    (0x31F0, 0x31FF),  # Katakana Phonetic Extensions
+    (0x3200, 0x32FF),  # Enclosed CJK Letters and Months
+    (0x3300, 0x33FF),  # CJK Compatibility
+    (0x4DC0, 0x4DFF),  # Yijing Hexagram Symbols
+    (0xA490, 0xA4CF),  # Yi Radicals
+    (0xFE30, 0xFE4F),  # CJK Compatibility Forms
+    (0xFE50, 0xFE6F),  # Small Form Variants
     (0x1D400, 0x1D7FF),  # Mathematical Alphanumeric Symbols
     (0x0370, 0x04FF),  # Greek and Coptic + Cyrillic
     (0x0530, 0x058F),  # Armenian
@@ -137,6 +163,13 @@ class AICLTokenizer:
         self.symbol_values: set = set(self.symbol_to_text.keys())
         # reference-cheap lookups
         self._markers_values = set(self.markers.values())
+        # fast longest-match index: per first char -> (lengths desc, text->entry)
+        self._fast: Dict[str, Tuple[Tuple[int, ...], Dict[str, Dict]]] = {}
+        for e in self.entries:
+            tmap = self._fast.setdefault(e["text"][0], ((), {}))[1]
+            tmap[e["text"]] = e
+        for fc, (_lens, tmap) in self._fast.items():
+            self._fast[fc] = (tuple(sorted({len(k) for k in tmap}, reverse=True)), tmap)
 
     # -- constructors ---------------------------------------------------
 
@@ -153,11 +186,10 @@ class AICLTokenizer:
         i, n = 0, len(text)
         while i < n:
             ch = text[i]
-            if ch == " ":
-                out.append(self.markers["space"]); i += 1; continue
-            if ch == "\n":
-                out.append(self.markers["newline"]); i += 1; continue
 
+            # Vocabulary match FIRST so multi-word/space-inclusive phrases can
+            # actually be replaced by one symbol (a leading space is a legal
+            # match start: ' the' -> <symbol>).
             matched = self._match_longest(text, i)
             if matched is not None:
                 entry, length, case = matched
@@ -168,6 +200,11 @@ class AICLTokenizer:
                 out.append(entry["symbol"])
                 i += length
                 continue
+
+            if ch == " ":
+                out.append(self.markers["space"]); i += 1; continue
+            if ch == "\n":
+                out.append(self.markers["newline"]); i += 1; continue
 
             if ch.isdigit() and (i == 0 or not text[i - 1].isalnum()):
                 out.append(self.markers["num"])
@@ -189,48 +226,58 @@ class AICLTokenizer:
     def _span_case(part: str) -> Optional[str]:
         """Casing of a matched span.
 
+        Leading spaces (legal match starts: ' the' -> <symbol>) are ignored for
+        the casing check; the actual word determines lower/title/upper.
+
         Return 'lower' | 'title' | 'upper', or None when the casing is mixed
         (e.g. 'QuickSort', 'getURL'). Mixed-case spans are never matched so
         identifiers round-trip exactly instead of being mangled by ↑/⇧.
         """
-        if part.islower():
+        core = part.lstrip(" ")
+        if not core:
             return "lower"
-        if part.isupper():
+        if core.islower():
+            return "lower"
+        if core.isupper():
             return "upper"
-        if part[0].isupper() and part[1:].islower():
+        if core[0].isupper() and core[1:].islower():
             return "title"
         return None
 
     def _match_longest(self, text: str, i: int) -> Optional[Tuple[Dict, int, str]]:
         """Longest vocabulary match at i, case-insensitive.
 
-        Word/phrase entries require word boundaries on both sides; char-level
-        entries (e.g. 'tion', 'ing') may match anywhere inside a word. A match
-        is only accepted when the span's casing is uniform (title/all-upper/
-        all-lower), keeping identifiers exact.
+        Word/phrase entries require word boundaries on both sides — except the
+        side that is *already* the entry's own leading/trailing space. This is
+        what lets a single symbol absorb ' the' or 'the ' instead of wasting a
+        token on the space. Char-level entries (e.g. 'tion', 'ing') may match
+        anywhere inside a word. A match is only accepted when the span's casing
+        is uniform (title/all-upper/all-lower), keeping identifiers exact.
         """
         rest = text[i:]
         if not rest:
             return None
-        cands = self.by_first.get(rest[0].lower())
-        if not cands:
+        fast = self._fast.get(rest[0].lower())
+        if not fast:
             return None
-        low = rest.lower()
-        for e in cands:  # longest-first per first char
+        lens, tmap = fast
+        n = len(text)
+        for L in lens:  # longest-first
+            if L > len(rest):
+                continue
+            e = tmap.get(rest[:L].lower())
+            if e is None:
+                continue
             src = e["text"]
-            if len(src) > len(low):
-                continue
-            if not low.startswith(src):
-                continue
-            if e["level"] != "char" and i > 0 and text[i - 1].isalnum():
+            if e["level"] != "char" and not src.startswith(" ") and i > 0 and text[i - 1].isalnum():
                 continue  # never swallow a word/phrase inside a word
-            after = i + len(src)
-            if e["level"] != "char" and after < len(text) and text[after].isalnum():
+            after = i + L
+            if e["level"] != "char" and not src.endswith(" ") and after < n and text[after].isalnum():
                 continue  # next char must not be alnum (word boundary)
             case = self._span_case(text[i:after])
             if case is None:
                 continue  # mixed casing ('QuickSort') — keep exact
-            return e, len(src), case
+            return e, L, case
         return None
 
     # -- decode ---------------------------------------------------------
@@ -277,7 +324,11 @@ class AICLTokenizer:
         if case is None or not unit:
             return unit
         if case == CASE_TITLE:
-            return unit[0].upper() + unit[1:]
+            lead = unit[: len(unit) - len(unit.lstrip(" "))]
+            core = unit[len(lead):]
+            if core:
+                core = core[0].upper() + core[1:]
+            return lead + core
         if case == CASE_UPPER:
             return unit.upper()
         return unit
