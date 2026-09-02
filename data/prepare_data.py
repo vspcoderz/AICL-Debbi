@@ -42,11 +42,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True, help="text file(s), comma separated")
     ap.add_argument("--out-dir", default="data", help=f"writes corpus.bin + id_map.json ({BOS=} {EOS=})")
-    ap.add_argument("--tokenizer", choices=["aicl", "bpe"], default="bpe",
-                    help="tokenizer backend: aicl (legacy) or bpe (SP, recommended)")
+    ap.add_argument("--tokenizer", choices=["aicl", "bpe", "bpe_phrase"], default="bpe_phrase",
+                    help="tokenizer backend: aicl (legacy), bpe (SP), bpe_phrase (BPE+AICL phrase 90%, recommended)")
     ap.add_argument("--vocab", default=None, help="existing AICL vocab JSON (else train new) [aicl only]")
     ap.add_argument("--sp-model", default="tokenizer/vocabularies/sp_bpe_6k.model",
-                    help="SentencePiece .model path [bpe only]")
+                    help="SentencePiece .model path [bpe* only]")
+    ap.add_argument("--phrase-vocab", default="tokenizer/vocabularies/bpe_phrase_60k.json",
+                    help="phrase vocab JSON [bpe_phrase only]")
     ap.add_argument("--vocab-size", type=int, default=2000)
     ap.add_argument("--min-freq", type=int, default=2)
     args = ap.parse_args()
@@ -64,7 +66,61 @@ def main() -> None:
     print(f"read {len(samples)} samples, {total} chars")
     print(f"tokenizer: {args.tokenizer}")
 
-    if args.tokenizer == "bpe":
+    if args.tokenizer in ("bpe", "bpe_phrase"):
+        if args.tokenizer == "bpe_phrase":
+            from bpe_phrase_tokenizer import BPhraseTokenizer
+            phrase_vocab = args.phrase_vocab
+            if not os.path.isabs(phrase_vocab):
+                repo_root = os.path.join(os.path.dirname(__file__), "..")
+                cand = os.path.join(repo_root, phrase_vocab)
+                if os.path.exists(cand):
+                    phrase_vocab = cand
+            sp_model = args.sp_model
+            if not os.path.isabs(sp_model):
+                repo_root = os.path.join(os.path.dirname(__file__), "..")
+                cand = os.path.join(repo_root, sp_model)
+                if os.path.exists(cand):
+                    sp_model = cand
+            tok = BPhraseTokenizer(sp_model, phrase_vocab)
+            print(f"loaded BPE+Phrase model from {sp_model} + {phrase_vocab} (vocab_size={tok.vocab_size} = {tok.sp.vocab_size} BPE + {tok.num_phrases} phrases)")
+            # Build id_map: SP ids + phrase ids
+            vocab_size = tok.vocab_size
+            chars_to_id = {"<pad>": 0, "<bos>": tok.bos_id, "<eos>": tok.eos_id, "<unk>": tok.unk_id}
+            id_to_chars = {"0": "<pad>", str(tok.bos_id): "<bos>", str(tok.eos_id): "<eos>"}
+            for i in range(tok.sp.vocab_size):
+                piece = tok.sp.id_to_piece(i)
+                if piece in ("<unk>", "<s>", "</s>"):
+                    continue
+                chars_to_id[piece] = i
+                id_to_chars[str(i)] = piece
+            for pid, phrase_key in tok.id_to_phrase.items():
+                # phrase key is delim-joined pieces, decode for display
+                phrase_text = phrase_key.replace("\x1f", "")
+                chars_to_id[phrase_key] = pid
+                id_to_chars[str(pid)] = phrase_key
+
+            ids = []
+            for s in samples:
+                enc = tok.encode(s)
+                ids.append(tok.bos_id)
+                ids.extend(enc)
+                ids.append(tok.eos_id)
+
+            arr = np.array(ids, dtype=np.uint16 if vocab_size < 65535 else np.int32)
+            os.makedirs(args.out_dir, exist_ok=True)
+            arr.tofile(os.path.join(args.out_dir, "corpus.bin"))
+            with open(os.path.join(args.out_dir, "id_map.json"), "w", encoding="utf-8") as fh:
+                json.dump({"id_to_chars": id_to_chars, "chars_to_id": chars_to_id,
+                           "vocab_size": vocab_size, "num_tokens": int(len(arr)),
+                           "tokenizer": "bpe_phrase", "sp_model": os.path.basename(sp_model),
+                           "phrase_vocab": os.path.basename(phrase_vocab), "num_phrases": tok.num_phrases}, fh, ensure_ascii=False, indent=2)
+
+            total_ids = sum(len(tok.encode(s)) + 2 for s in samples)
+            avg_tok_len = total / max(total_ids, 1)
+            print(f"wrote {args.out_dir}/corpus.bin ({len(arr):,} ids) + id_map.json (vocab_size {vocab_size})")
+            print(f"BPE+Phrase compression: {total_ids} ids for {total} chars -> {avg_tok_len:.2f} chars/token, {(1 - total_ids*1.0/max(total,1))*100:.2f}% token reduction vs chars")
+            return
+
         from sp_tokenizer import SPTokenizer
 
         # Resolve sp-model relative to repo root
