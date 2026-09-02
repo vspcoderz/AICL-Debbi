@@ -1,0 +1,2891 @@
+Here is a clean, diverse, and well-structured training dataset designed to train a custom tokenizer (such as Byte-Pair Encoding, WordPiece, or Unigram). 
+It includes code, formal English, informal chat, multilingual samples, and special characters to ensure your tokenizer handles real-world data effectively. 
+1. Code & Technical Text 
+2. Formal & Informational Text 
+The concept of artificial intelligence dates back to ancient history, with myths and stories of artificial beings endowed with intelligence or consciousness by master craftsmen. However, the modern field of AI was formally founded in 1956 at a conference on the campus of Dartmouth College. 
+Photosynthesis is a biological process used by plants, algae, and certain bacteria to harness energy from sunlight and turn it into chemical energy. The general chemical equation for photosynthesis is 6CO2 + 6H2O + light energy -&gt; C6H12O6 + 6O2. 
+3. Informal Chat & Social Media 
+
+• "Omg, I can't believe you just said that!! 😂 That's so funny, dynamic_username123!" 
+• "brb going to the store, do you need anything? btw don't forget to lock the back door." 
+• "This new update is an absolute game-changer. Standard features are 10/10, highly recommend." 
+
+4. Multilingual Samples 
+
+• Spanish: El procesamiento del lenguaje natural es una rama de la inteligencia artificial. 
+• French: L'apprentissage automatique permet aux ordinateurs d'apprendre sans être explicitement programmés. 
+• German: Die Tokenisierung ist der erste Schritt in der modernen Textverarbeitung. 
+• Hindi: प्राकृतिक भाषा प्रसंस्करण कंप्यूटर विज्ञान का एक महत्वपूर्ण क्षेत्र है। 
+• Chinese: 标记化是将文本分解 circulation 为更小单元的过程。 
+
+5. Edge Cases & Special Characters 
+
+• Abbreviations: e.g., i.e., U.S.A., Ph.D., St. Louis, 10:30 PM. 
+• URL/Emails: example-domain.com, test.user_name+alias@subdomain.company.org 
+• Numbers & Symbols: $45,230.12, +44-7911-123456, 99.9%, #machinelearning, @openai, [important], {key: value}. 
+• Hyphenated & Compounded words: state-of-the-art, multi-layered, self-driving, ice-cream, preprocessing. 
+
+If you need this data formatted differently, please tell me: 
+
+• What file format do you need? (.txt, .json, or a Python list?) 
+• What is the target size of your vocabulary? 
+• What specific domain are you training this tokenizer for? 
+
+I can generate a massive, specialized dataset based on your exact requirements. 
+
+AI can make mistakes, so double-check responses
+
+
+
+Skip to content
+Logo
+MidiTok's docs
+
+Bases of Music and AI
+
+    Music formats
+    The MIDI protocol
+    Sequential models and tokens
+
+MidiTok
+
+    Bases of MidiTok
+    Tokenizer Configuration
+    Tokenizations
+    Attribute Controls
+    Training a tokenizer
+    Hugging Face Hub
+    Using MidiTok with Pytorch
+    Data augmentation
+    Utils methods
+
+Others
+
+    Code examples
+    Citations
+
+Project Links
+
+    GitHub
+    PyPi
+
+Back to top
+View this page
+Training a tokenizer
+
+A freshly created tokenizer can already serialize MIDI or abc files into token sequences that can be used to train your model. But if you want to get the best performances (results quality) and efficiency (training and inference speed), you will need to train the tokenizer first!
+
+A just created tokenizer will have a vocabulary containing basic tokens representing single attributes of notes, pedals, tempos etc. Training a tokenizer consists in populating the vocabulary with new tokens representing successions of these basic tokens, that will be fetched from a training corpus.
+
+All tokenizers can be trained, except if they use embedding pooling (is_multi_voc)!
+Why training a tokenizer
+
+If you serialize music files only with these basic tokens, you will encounter two major limitations: your model will not learn meaningful embeddings, and your token sequences will be very large thus hurting the model’s efficiency (training/inference speed).
+
+For symbolic music, training the tokenizer allows to increase both the model’s performances and efficiency.
+Meaningful embeddings
+
+During their training, sequential/language models such as Transformers (typically used with MidiTok) learn abstract representations of the tokens, called embeddings, that are vectors in a space with a large number of dimensions (e.g. from 500, up to 10k for the largest models). They do so contextually, depending on how the tokens are present and combined together in the data. This allows them to learn the semantic of the tokens, that can in turn allow them to perform the tasks they are trained for. In other words, they learn the meaning of the words (associated to individual tokens in the vocabulary) to be able to perform their tasks.
+
+In the case of music, newly learned tokens can represent whole notes (i.e. succession of their token attributes) or successions of notes. The notion of semantic is unclear, yet, these embeddings carry more information about the melody and harmony, that the model can learn and leverage.
+Reduced sequence lengths
+
+Serializing music files in single “basic” attribute tokens naturally induces fairly long token sequences. As a note is made of at least three tokens (Pitch, Velocity, Duration/NoteOff, optionally Program), the resulting token sequence will have a number of tokens at least three times the number of notes.
+
+This is problematic as the time and space complexity of Transformer models grow quadratically with the input sequence length. Thus, the longer the sequence is, the more computations will be made and memory will be used.
+
+Training a tokenizer to learn new tokens that represent combinations of basic tokens will “compress” the sequence, and allow to drastically reduce its number of tokens, and in turn the efficiency of the model it is fed to.
+Basic and learned tokens
+
+A tokenizer features an base vocabulary, which contains the tokens representing each note attributes, tempos, times etc. This base vocabulary is created from the values you set in the tokenizer’s config (e.g. list of pitches, velocities…). They can be seen as the equivalent of the characters (or bytes) for text, and the base vocabulary to the initial alphabet.
+
+To train a tokenizer, MidiTok is backed by the Hugging Face 🤗tokenizers Rust library allowing super-fast training and encoding. Thus, internally MidiTok represents basic tokens (from the base vocab) as characters (bytes). Essentially, a token will have three unique forms:
+
+    The text describing the token itself, e.g. Pitch_58, Position_4 …;
+
+    An id as an integer, that will be fed to the model, e.g. 65. It corresponds to the index of the token in the vocabulary;
+
+    A byte form, as a character or succession of characters, e.g. a or any unicode character starting from the 33rd one (0x21).
+
+A learned token will be represented by the succession of the unique characters of the base tokens it represent. You can access to several vocabularies to get the equivalents forms of tokens:
+
+    vocab: the base vocabulary, mapping token descriptions to their ids;
+
+    vocab_model: the vocabulary with learned tokens, mapping byte forms to their integer id;
+
+    _vocab_base_byte_to_token: mapping the base token byte forms to their string forms;
+
+    _vocab_base_id_to_byte: mapping the base token ids (integers) to their byte forms;
+
+    _vocab_bpe_bytes_to_tokens: mapping the byte forms of the complete vocab to their string forms, as a list of string;
+
+Tokenizer models
+Byte Pair Encoding (BPE)
+
+BPE is a compression algorithm that replaces the most recurrent token successions of a corpus, by newly created ones. It starts from a vocabulary containing tokens representing the initial alphabet of the modality of the data at hand, and iteratively counts the occurrences of each token successions, or bigrams, in the data, and merges the most recurrent one with a new token representing both of them, until the vocabulary reaches the desired size.
+
+For instance, in the character sequence aabaabaacaa, the sub-sequence aa occurs three times and is the most recurrent one. Learning BPE on this sequence would replace aa with a new symbol, e.g., d, resulting in a compressed sequence dbdbdcd. The latter can be reduced again by replacing the db subsequence, giving eedcd. The vocabulary, which initially contained three characters (a, b and c) now also contains d and e. In practice BPE is learned on a corpus until the vocabulary reaches a target size.
+
+Today in the NLP field, BPE is used with many tokenizers to build their vocabulary, as it allows to encode rare words and segmenting unknown or composed words as sequences of sub-word units. The base initial vocabulary is the set of all the unique characters present in the data, which compose the words that are automatically learned as tokens by the BPE algorithm.
+Unigram
+
+The Unigram algorithm serves the same purpose than BPE, but works in the other direction: it starts from a large vocabulary of byte successions (e.g. words) and substitute some of them with smaller pieces until the vocabulary reaches the desired size.
+
+At each training step, Unigram compute the subword occurrence probabilities with the Expectation maximization (EM) algorithm and computes a loss over the training data and current vocabulary. For each token in the vocabulary, Unigram computes how much removing it would increase the loss. The tokens that increase the loss the least have the lowest impact on the overall data representation, and can be considered less important, and Unigram will remove them until the vocabulary reaches the desired size.
+
+Note that the loss is computed over the whole training data and current vocabulary. This step is computationally expensive. Hence removing a single token per training step would require a significant amount of time. In practice, n percents of the vocabulary is removed at each step, with n being a hyperparameter to set.
+
+Note that Unigram is not a deterministic algorithm: training a tokenizer twice with the same data and training parameter will likely result in similar vocabularies, but a few differences. You can read more details on the loss computation in the documentation of the tokenizers library.
+
+The Unigram model supports the additional training arguments that can be provided as keyword arguments to the miditok.MusicTokenizer.train() method:
+
+    shrinking_factor: shrinking factor to used to reduce the vocabulary at each training step (default: 0.75);
+
+    max_piece_length: maximum length a token can reach (default in MidiTok: 50 if splitting ids per beats, 200 otherwise i.e. splitting ids per bars or no split);
+
+    n_sub_iterations: number of Expectation-Maximization algorithm iterations performed before pruning the vocabulary (default: 2).
+
+Unigram is also implemented in the SentencePiece library.
+WordPiece
+
+WordPiece is a subword-based algorithm very similar to BPE. The original implementation was never open-sourced by Google. The training procedure is known to be a variation of BPE. In 🤗tokenizers (and so in MidiTok), BPE is used to create the vocabulary.
+
+The difference with BPE lies in the way the bytes are tokenized after training: for a specific word to tokenize, WordPiece will look in the vocabulary if it is present. If so, there is nothing to do and the token id of the word can be used. Otherwise, it will decrement the word from its end until it finds a match in the vocabulary, and iteratively do the same for all the components (“pieces”) of the word. The procedure is explained more in detail in the Tensorflow documentation.
+
+Intuitively, WordPiece tokenization is trying to satisfy two different objectives:
+
+    Tokenize the data into the least number of tokens as possible;
+
+    When a byte sequence needs to be split, it is split into tokens that have a maximum count in the training data.
+
+WordPiece features a max_input_chars_per_word attribute limiting the length of the “words”, base tokens successions in MidiTok’s case, it can process. Token successions with a length exceeding this parameter will be replaced by a unk_token token (MidiTok uses the padding token by default). You can set the max_input_chars_per_word in the keyword arguments of the miditok.MusicTokenizer.train() method, but the higher this parameter is, the slower the encoding-decoding will be. The number of base tokens for a music file is likely to go in the tens of thousands. As a result, WordPiece should exclusively be used while splitting the token ids per bars or beats in order to make sure that the lengths of the token successions remain below this limit.
+Splitting the ids
+
+In MidiTok, we represent base tokens as bytes in order to use the Hugging Face tokenizers Rust library. The length of the token sequence of a music file can easily reach tens of thousands of tokens, depending on its number of tracks, notes in each track, and length in bars. As a result, if we convert this sequence in its byte form, we end with a one single very long word (one character per base token). Using this single word to train the tokenizer is feasible (except for WordPiece), and doing so the tokenizer will learn new tokens representing successions of base tokens that can span across several bars and beats, and optimizes the sequence length reduction the most. However, learning tokens that can represent events starting and ending anywhere cannot ensure us to have tokens with musically relevant information. It could be seen as training a text tokenizer without splitting the text into words, thus learning tokens that also contain spaces between words or subwords.
+
+MidiTok allows to split the token sequence into subsequences of bytes for each bar or beat, that will be treated separately by the tokenizer’s model. This can be set by the encode_ids_split attribute of the tokenizer’s configuration (miditok.classes.TokenizerConfig). Doing so, the learned tokens will not span across different bars or beats. The splitting step is also performed before encoding token ids after that the training is done. It is similar to the “pre-tokenization” step in the Hugging Face tokenizers library which consists in splitting the input text into distinct words at spaces.
+Training example
+
+from miditok import REMI, TokenizerConfig, TokSequence
+from copy import deepcopy
+
+tokenizer = REMI(TokenizerConfig(use_programs=True))
+paths_midis = list(Path("path", "to", "midis").glob('**/*.mid'))
+
+# Learns the vocabulary with BPE
+# Ids are split per bars by default
+tokenizer.train(
+    vocab_size=30000,
+    model="BPE",
+    files_paths=paths_midis,
+)
+
+# Tokenize a MIDI file
+tokens = tokenizer(paths_midis[0])
+# Decode BPE
+tokens_no_bpe = tokenizer.decode_bpe(deepcopy(tok_seq))
+
+Methods
+
+A tokenizer can be trained with the miditok.MusicTokenizer.train() method. After being trained, the tokenizer will automatically encode the token ids with its model when tokenizing music files.
+
+Trained tokenizers can be saved and loaded back (Save / Load a tokenizer).
+
+miditok.MusicTokenizer.train(self, vocab_size: int, model: Literal['BPE', 'Unigram', 'WordPiece'] | Model | None = None, iterator: Iterable | None = None, files_paths: Sequence[Path] | None = None, **kwargs) → None
+
+    Train the tokenizer to build its vocabulary with BPE, Unigram or WordPiece.
+
+    The data used for training can either be given through the iterator argument as an iterable object yielding strings, or by files_paths as a list of paths to music files that will be tokenized. You can read the Hugging Face 🤗tokenizers documentation, and 🤗tokenizers course for more details about the iterator and input type.
+
+    If splitting the token sequences per bar or beat, a “Metaspace” pre-tokenizer and decoder will be used. Each chunk of tokens will be prepended with a special “▁” (U+2581) character to mark its beginning, as would be a word.
+
+    A few considerations to note:
+
+    1. The WordPiece model has a max_input_chars_per_word attribute, which controls the maximum number of “base tokens” a sequence of ids can contain until it discards and replaces it with a predefined “unknown” token (unk_token model attribute). This means that, depending on the base sequence lengths of your files, the tokenizer will likely discard them. This can be addressed by either: 1) splitting the token sequence per bars or beats before encoding ids (highly recommended) into smaller subsequences whose lengths will likely be lower to the model’s max_input_chars_per_word attribute; 2) set the model’s max_input_chars_per_word attribute to a value higher than most of the sequences of ids encoded by the WordPiece model. A high max_input_chars_per_word value will however drastically increase the encoding and decoding times, reducing its interest. The default values set by MidiTok are 400 when splitting ids in bar subsequences and 100 when splitting ids in beat subsequences. The max_input_chars_per_word and unk_token model attributes can be set by referencing them in the keyword arguments of this method (kwargs). 2. The Hugging Face Unigram model training is not 100% deterministic. As such and if you are using Unigram, you should train your tokenizer only once before using it to save tokenized files or train a model. Otherwise, some token ids might be swapped, resulting in incoherent encodings-decodings.
+
+    The training progress bar will not appear with non-proper terminals. (cf GitHub issue )
+
+    Parameters:
+
+            vocab_size – size of the vocabulary to learn / build.
+
+            model – backbone model to use to train the tokenizer. MidiTok relies on the Hugging Face tokenizers library, and supports the BPE, Unigram and WordPiece models. This argument can be either a string indicating the model to use, an already initialized model, or None if you want to retrain a tokenizer already trained. (default: None, default to BPE if the tokenizer is not already trained, keeps the same model otherwise)
+
+            iterator – an iterable object yielding the training data, as lists of string. It can be a list or a Generator. This iterator will be passed to the model for training. It musts implement the __len__ method. If None is given, you must use the tokens_paths argument. (default: None)
+
+            files_paths – paths of the music files to load and use. (default: None)
+
+            kwargs – any additional argument to pass to the trainer or model. See the tokenizers docs for more details.
+
+miditok.MusicTokenizer.encode_token_ids(self, seq: TokSequence | list[TokSequence]) → None
+
+    Encode a miditok.TokSequence with BPE, Unigram or WordPiece.
+
+    The method works inplace and only alters the sequence’s .ids. The method also works with lists of miditok.TokSequence. If a list is given, the model will encode all sequences in one batch to speed up the operation.
+
+    Parameters:
+
+        seq – miditok.TokSequence to encode ids.
+
+miditok.MusicTokenizer.decode_token_ids(self, seq: TokSequence | list[TokSequence]) → None
+
+    Decode the ids of a miditok.TokSequence with BPE, Unigram or WordPiece.
+
+    This method only modifies the .ids attribute of the input sequence(s) and does not complete it. This method can be used recursively on lists of miditok.TokSequence.
+
+    Parameters:
+
+        seq – token sequence to decompose.
+
+Next
+Hugging Face Hub
+Previous
+Attribute Controls
+Copyright © 2024, Nathan Fradet
+Made with Sphinx and @pradyunsg's Furo
+On this page
+
+        Why training a tokenizer
+            Meaningful embeddings
+            Reduced sequence lengths
+        Basic and learned tokens
+        Tokenizer models
+            Byte Pair Encoding (BPE)
+            Unigram
+            WordPiece
+        Splitting the ids
+        Training example
+        Methods
+
+Read the Docs latest
+
+Skip to content
+Logo
+MidiTok's docs
+
+Bases of Music and AI
+
+    Music formats
+    The MIDI protocol
+    Sequential models and tokens
+
+MidiTok
+
+    Bases of MidiTok
+    Tokenizer Configuration
+    Tokenizations
+    Attribute Controls
+    Training a tokenizer
+    Hugging Face Hub
+    Using MidiTok with Pytorch
+    Data augmentation
+    Utils methods
+
+Others
+
+    Code examples
+    Citations
+
+Project Links
+
+    GitHub
+    PyPi
+
+View this page
+Hugging Face Hub
+What is the Hugging Face hub
+
+The Hugging Face Hub is a model and dataset sharing platform which is widely used in the AI community. It allows to freely upload, share and download models and datasets, directly in your code in a very convenient way. Its interactions rely on an open-source Python package named huggingface_hub. As it works seamlessly in the Hugging Face ecosystem, especially the Transformers or Diffusers libraries, it stood out and became one of the preferred way to openly share and download models.
+
+Now when downloading a Transformer model, you will need to also download its associated tokenizer to be able to “dialog” with it. Likewise, if you want to share one of your models, you will need to share its tokenizer too for people to be able to use it. MidiTok allows you to push and download tokenizers in similar way to what is done in the Hugging Face Transformers library.
+How MidiTok interoperates with the hub
+
+Internally, MidiTok relies on the huggingface_hub.ModelHubMixin component. It implements the same methods commonly used in the Hugging Face ecosystem. Note that:
+
+    miditok.MusicTokenizer.save_pretrained() is equivalent to calling miditok.MusicTokenizer.save_params();
+
+    miditok.MusicTokenizer.from_pretrained() can be used to load tokenizers whether from the Hugging Face hub or from a file on your local filesystem;
+
+    for miditok.MusicTokenizer.save_pretrained() and miditok.MusicTokenizer.push_to_hub(), you can ignore the config argument which is meant to be used with models (not applicable for tokenizers);
+
+    you can give a filename keyword argument with the miditok.MusicTokenizer.save_pretrained() and miditok.MusicTokenizer.from_pretrained() methods to use a specific tokenizer configuration file name, otherwise the default one will be used (tokenizer.json).
+
+miditok.MusicTokenizer.from_pretrained(pretrained_model_name_or_path: str | Path, *, force_download: bool = False, token: bool | str | None = None, cache_dir: str | Path | None = None, local_files_only: bool = False, revision: str | None = None, **model_kwargs) → T
+
+    Download a model from the Huggingface Hub and instantiate it.
+
+    Args:
+
+        pretrained_model_name_or_path (str, Path):
+
+                Either the model_id (string) of a model hosted on the Hub, e.g. bigscience/bloom.
+
+                Or a path to a directory containing model weights saved using
+
+                    [~transformers.PreTrainedModel.save_pretrained], e.g., ../path/to/my_model_directory/.
+
+        revision (str, optional):
+
+            Revision of the model on the Hub. Can be a branch name, a git tag or any commit id. Defaults to the latest commit on main branch.
+        force_download (bool, optional, defaults to False):
+
+            Whether to force (re-)downloading the model weights and configuration files from the Hub, overriding the existing cache.
+        token (str or bool, optional):
+
+            The token to use as HTTP bearer authorization for remote files. By default, it will use the token cached when running hf auth login.
+        cache_dir (str, Path, optional):
+
+            Path to the folder where cached files are stored.
+        local_files_only (bool, optional, defaults to False):
+
+            If True, avoid downloading the file and return the path to the local cached file if it exists.
+        model_kwargs (dict, optional):
+
+            Additional kwargs to pass to the model during initialization.
+
+miditok.MusicTokenizer.save_pretrained(self, save_directory: str | Path, *, repo_id: str | None = None, push_to_hub: bool = False, **push_to_hub_kwargs) → str | None
+
+    Save the tokenizer in local a directory.
+
+    Overridden from huggingface_hub.ModelHubMixin. Since v0.21 this method will automatically save self.config on after calling self._save_pretrained, which is unnecessary in our case.
+
+    Parameters:
+
+            save_directory – Path to directory in which the model weights and configuration will be saved.
+
+            push_to_hub – Whether to push your model to the Huggingface Hub after saving it.
+
+            repo_id – ID of your repository on the Hub. Used only if push_to_hub=True. Will default to the folder name if not provided.
+
+            push_to_hub_kwargs – Additional key word arguments passed along to the [~ModelHubMixin.push_to_hub] method.
+
+miditok.MusicTokenizer.push_to_hub(self, repo_id: str, *, config: dict | DataclassInstance | None = None, commit_message: str = 'Push model using huggingface_hub.', private: bool | None = None, token: str | None = None, branch: str | None = None, create_pr: bool | None = None, allow_patterns: str | list[str] | None = None, ignore_patterns: str | list[str] | None = None, delete_patterns: str | list[str] | None = None, model_card_kwargs: dict[str, Any] | None = None) → str
+
+    Upload model checkpoint to the Hub.
+
+    Use allow_patterns and ignore_patterns to precisely filter which files should be pushed to the hub. Use delete_patterns to delete existing remote files in the same commit. See [upload_folder] reference for more details.
+
+    Args:
+
+        repo_id (str):
+
+            ID of the repository to push to (example: “username/my-model”).
+        config (dict or DataclassInstance, optional):
+
+            Model configuration specified as a key/value dictionary or a dataclass instance.
+        commit_message (str, optional):
+
+            Message to commit while pushing.
+        private (bool, optional):
+
+            Whether the repository created should be private. If None (default), the repo will be public unless the organization’s default is private.
+        token (str, optional):
+
+            The token to use as HTTP bearer authorization for remote files. By default, it will use the token cached when running hf auth login.
+        branch (str, optional):
+
+            The git branch on which to push the model. This defaults to “main”.
+        create_pr (boolean, optional):
+
+            Whether or not to create a Pull Request from branch with that commit. Defaults to False.
+        allow_patterns (list[str] or str, optional):
+
+            If provided, only files matching at least one pattern are pushed.
+        ignore_patterns (list[str] or str, optional):
+
+            If provided, files matching any of the patterns are not pushed.
+        delete_patterns (list[str] or str, optional):
+
+            If provided, remote files matching any of the patterns will be deleted from the repo.
+        model_card_kwargs (dict[str, Any], optional):
+
+            Additional arguments passed to the model card template to customize the model card.
+
+    Returns:
+
+        The url of the commit of your model in the given repository.
+
+Example
+
+from miditok import REMI, TokSequence
+from copy import deepcopy
+
+tokenizer = REMI()  # using defaults parameters (constants.py)
+hf_token = "your_hf_token"  # to create on huggingface.co
+
+# Train the tokenizer with BPE
+tokenizer.train(
+    vocab_size=30000,
+    files_paths=list(Path("path", "to", "midis").glob("**/*.mid")),
+)
+
+# Push the tokenizer to the HF hub
+tokenizer.push_to_hub("YourUserName/model-name", private=True, token=hf_token)
+
+# Recreates it from the configuration saved on the hub
+tokenizer2 = REMI.from_pretrained("YourUserName/model-name", token=hf_token)
+assert tokenizer == tokenizer2
+
+Next
+Using MidiTok with Pytorch
+Previous
+Training a tokenizer
+Copyright © 2024, Nathan Fradet
+Made with Sphinx and @pradyunsg's Furo
+On this page
+
+        What is the Hugging Face hub
+        How MidiTok interoperates with the hub
+        Example
+
+Read the Docs latest
+
+# bpeasy
+
+[![codecov](https://codecov.io/gh/gautierdag/bpeasy/branch/main/graph/badge.svg?token=NWHDJ22L8I)](https://codecov.io/gh/gautierdag/bpeasy) [![tests](https://github.com/gautierdag/bpeasy/actions/workflows/test.yml/badge.svg)](https://github.com/gautierdag/bpeasy/actions/workflows/test.yml) [![image](https://img.shields.io/pypi/l/bpeasy.svg)](https://pypi.python.org/pypi/bpeasy) [![image](https://img.shields.io/pypi/pyversions/bpeasy.svg)](https://pypi.python.org/pypi/bpeasy) [![PyPI version](https://badge.fury.io/py/bpeasy.svg)](https://badge.fury.io/py/bpeasy)
+
+## Overview
+
+`bpeasy` is a Python package that provides a tokenizer trainer, implementing in 400 lines of rust an efficient version of Byte Pair Encoding (BPE). The implementation largely follows the huggingface `tokenizers` library, but makes opinionated decisions to simplify the tokenizer training specifically to:
+
+1. Treat text data at the byte-level first --- all text is converted to bytes before training rather than using a character-level approach (like in Huggingface).
+2. Always use a regex-based split pre-tokenizer. This is a customisable regex that is applied to the text before training. This regex decides where to split the text and limits what kind of tokens are possible. This is technically possible in Huggingface but is not well documented. We also use the `fancy-regex` crate which supports a richer set of regex features than the `regex` crate used in Huggingface.
+3. Use `int64` types for counting to allow for training on much larger datasets without the risk of overflow.
+
+**You can think of `bpeasy` as the `tiktoken` training code that never was.**
+
+See the [benchmarks](/benchmarks/README.md) section for a comparison with the Huggingface library.
+
+## Installation
+
+Simply install the package using pip:
+
+```bash
+pip install bpeasy
+```
+
+## Training
+
+The training function is designed to be bare-bones and returns the trained tokenizer vocab as a dictionary of bytes to integers. This is to allow for maximum flexibility in how you want to use the tokenizer. For example, you can use then port these to tiktoken or Huggingface tokenizers (see below).
+
+```python
+# should be an iterator over str
+iterator = jsonl_content_iterator(args)
+# example regex from GPT-4
+regex_pattern = r"""(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+"""
+
+# returns the vocab (dict[bytes, int])
+vocab = bpeasy.train_bpe(
+    iterator,
+    regex_pattern,
+    args.max_sentencepiece_length, # max length of tokens
+    args.vocab_size, # max size of vocab
+    args.batch_size, # number of items to pretokenize/count at once (default: 1000)
+)
+```
+
+Alternatively, you can also train using the basic tokenizer class provided:
+
+```python
+from bpeasy.tokenizer import BPEasyTokenizer
+
+tokenizer = BPEasyTokenizer.train(
+    iterator, # iterator over str
+    vocab_size=vocab_size,
+    max_token_length=max_token_length,
+    regex_pattern=regex_pattern,
+    special_tokens=["<s>", "<pad>", "</s>"],
+    fill_to_nearest_multiple_of_eight=True,
+    name="bpeasy",
+)
+```
+
+Note on `batch_size`: The `batch_size` parameter controls how many items are pretokenized and counted at once. A larger batch size will be faster but will use more memory. The default is 1000. If all your texts/strings can fit in memory, you can set this to the size of your dataset to speed up the process. If you are working with a large dataset, you can set this to a smaller value to limit memory issues.
+
+### Encoding/Decoding
+
+To test your tokenizer you can use the `BPEasyTokenizer` class, which is a wrapper around the `tiktoken.Encoding` module, simplifying the handling of vocabularies, special tokens, and regex patterns for tokenization.
+
+```python
+from bpeasy.tokenizer import BPEasyTokenizer
+
+your_special_tokens = ["<s>", "<pad>", "</s>"]
+
+tokenizer = BPEasyTokenizer(
+    vocab=vocab,
+    regex_pattern=regex_pattern,
+    special_tokens=your_special_tokens,
+    fill_to_nearest_multiple_of_eight=True, # pad vocab to multiple of 8
+    name="bpeasy" # optional name for the tokenizer,
+    batch_size=1000, # optional batch size for the number of items to pretokenize/count at once
+)
+
+test = "hello_world"
+
+# encode and decode uses the tiktoken functions
+encoded = tokenizer.encode(test)
+decoded = tokenizer.decode(encoded)
+> "hello_world"
+```
+
+You can also use `tiktoken` directly, but you would need to handle the special tokens and regex pattern yourself:
+
+```python
+import tiktoken
+
+vocab = bpeasy.train_bpe(...)
+special_tokens = ["<s>", "<pad>", "</s>"]
+
+# Sort the vocab by rank
+sorted_vocab = sorted(list(vocab.items()), key=lambda x: x[1])
+
+# add special tokens
+special_token_ranks = {}
+for special_token in special_tokens:
+    special_token_ranks[special_token] = len(sorted_vocab)
+    sorted_vocab.append((special_token.encode("utf-8"), len(sorted_vocab)))
+
+full_vocab = dict(sorted_vocab)
+
+encoder = tiktoken.Encoding(
+            name=name,
+            pat_str=regex_pattern,
+            mergeable_ranks=full_vocab,
+            special_tokens=special_token_ranks,
+        )
+```
+
+### Save/Load tokenizer from file
+
+We provide basic utility functions to save and load the tokenizer from a json file.
+
+```python
+tokenizer.save("path_to_file.json")
+
+tokenizer = BPEasyTokenizer.from_file("path_to_file.json")
+```
+
+### Export to HuggingFace format
+
+We also support exporting the tokenizer to the HuggingFace format, which can then be used directly with the HuggingFace `transformers` library.
+
+```python
+from bpeasy.tokenizer import BPEasyTokenizer
+from trans
+tokenizer = BPEasyTokenizer(
+    ...
+)
+
+tokenizer.export_to_huggingface_format("hf_tokenizer.json")
+
+from transformers import PreTrainedTokenizerFast
+
+hf_tokenizer = PreTrainedTokenizerFast(tokenizer_file="hf_tokenizer.json")
+```
+
+### Export vocab to `tiktoken` txt format
+
+```python
+from bpeasy import 
+vocab = bpeasy.train_bpe(...)
+
+# saves the vocab to a tiktoken txt file format
+save_vocab_to_tiktoken(vocab, "vocab.txt", special_tokens=["<s>", "<pad>", "</s>"])
+
+```
+
+If you want to use the `tiktoken` txt format, you will still need to handle the regex and special tokens yourself, as shown above,
+
+## Contributing
+
+Contributions are welcome! Please open an issue if you have any suggestions or improvements.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Citation
+
+If you use `bpeasy` in your research, please cite the following paper:
+
+```bash
+@software{bpeasy,
+  author = {Gautier Dagan},
+  title = {bpeasy},
+  year = {2024},
+  url = {https://github.com/gautierdag/bpeasy},
+  repository = {https://github.com/gautierdag/bpeasy},
+  author-email = {gautier.dagan@ed.ac.uk},
+  affiliation = {University of Edinburgh},
+  orcid = {https://orcid.org/0000-0002-1867-4201}
+}
+```
+
+Quick heads-up first: **100,000 characters is a LOT** — that's roughly 16,000+ words, or about 40–50 pages, basically a short book. I can't fit that in one message, but here's what we can do:
+
+**I write it in parts.** Here's Part 1 (~1,500 words). Just say **"continue"** after each part and I'll keep going. Tell me a topic if you want something specific — for now I'll start with a big general one.
+
+---
+
+# The Internet: The Machine That Changed the World
+
+## Introduction
+
+Few inventions in human history have reshaped daily life as thoroughly as the internet. In less than fifty years, it has gone from a small military research project connecting four computers to a global network linking billions of people, machines, and ideas. The printing press took centuries to transform society; the internet did it in a few decades. Today it is nearly impossible to find a single area of human activity — work, school, friendship, medicine, government, art, love — that has not been fundamentally changed by the simple act of connecting computers together and letting them talk.
+
+This essay explores how the internet transformed communication, knowledge, commerce, education, and community, why it also created serious new problems, and what its future might hold.
+
+## The Death of Distance
+
+Before the internet, communication across distance was slow and expensive. A letter could take weeks to arrive. An international phone call cost more than many people earned in a day. Human connection was limited by geography in a way that shaped entire lives: where you were born largely determined who you would ever know.
+
+The internet collapsed distance to zero. An email crosses the planet in seconds at almost no cost. A video call lets a grandmother in one country watch her grandchild take his first steps in another. People fall in love, build friendships, and form communities with others they have never met in person and may never meet at all. For migrants, soldiers abroad, and separated families, the internet became nothing less than a lifeline.
+
+Distance still exists physically, but socially it has nearly vanished — and that may be the single most profound change the internet ever made.
+
+## The Library of Alexandria Reborn
+
+For most of human history, knowledge was scarce and guarded. Books were copied by hand, then later printed in small numbers. Only the wealthy could afford private libraries; only scholars near great universities could access serious research. If you were born in a village, the sum of human knowledge available to you might be a handful of books.
+
+The internet reversed this completely. Encyclopedias, digital archives, free university lectures, tutorials, research papers, and millions of books are now available to anyone with a connection. A curious teenager in a remote town today has access to more information than the greatest scholars of the past. The only true limit left is curiosity itself.
+
+Of course, access is not the same as understanding. The skill of the modern age is no longer finding information — it is judging it. That is a challenge, but a good one to have.
+
+## The New Marketplace
+
+Commerce was transformed just as deeply. A shop once needed a physical location, local customers, and expensive advertising. Now a single person with a laptop can sell products worldwide. A craftsman in a small village can reach buyers on another continent. Payment systems moved online, bringing banking to millions of people who never lived near a bank branch.
+
+Work itself changed. Remote work untethered millions of jobs from offices. Entire professions appeared that nobody had imagined in 1990: app developers, social media managers, streamers, data scientists, online teachers. Small businesses became global, and global companies became household names overnight.
+
+The new economy also brought instability — gig work without security, fierce global competition, and industries destroyed as fast as new ones were born. But the door of opportunity opened wider than ever before.
+
+## The Classroom Without Walls
+
+Education may be the area where the internet's promise shines brightest. During the pandemic, hundreds of millions of students learned from home, proving that school does not have to mean a specific building. Online courses, video lessons, e-books, and discussion communities mean a student anywhere can learn almost anything — often for free.
+
+A motivated learner in a small town can study programming, languages, history, or mathematics from the world's best teachers. The internet did not just spread information; it spread *opportunity*.
+
+Yet the digital divide remains real: children without devices or reliable connections fall behind their connected peers. Technology alone cannot fix inequality, but it remains one of the most powerful tools humanity has for shrinking it.
+
+## Community and Connection
+
+Humans are social creatures, and the internet gave us entirely new ways to be social. People with rare illnesses find others who truly understand them. Fans of the most obscure hobbies build thriving communities. Social movements organize in days. Culture — music, jokes, fashion, ideas — now spreads across the planet in hours instead of decades.
+
+For lonely people, the internet can be a window out of isolation. For the disabled, elderly, or geographically isolated, it can be a social world they could never otherwise enter.
+
+## The Shadow Side
+
+But honesty requires looking at the darkness too. The same speed that spreads truth spreads lies faster. Misinformation, scams, hacking, and identity theft thrive online. Companies track our every click and build intimate profiles of our lives. Apps are engineered to be addictive — infinite scroll, constant notifications — and mental health, especially among the young, has suffered.
+
+Echo chambers push people into extreme corners. Authoritarian governments use the same network to surveil and control. The internet is a mirror of humanity: it amplifies our genius and our cruelty alike.
+
+## Where We Go From Here
+
+The story is unfinished. Artificial intelligence, faster networks, and billions more connected devices are coming. The real question is not whether the internet is good or bad — it is clearly both — but whether we will learn to master it: teaching digital literacy, protecting privacy, designing technology that respects human attention, and raising children who use the network as a tool rather than being used by it.
+
+## Conclusion
+
+The internet is the most powerful tool humanity has ever built. It abolished distance, democratized knowledge, rebuilt the economy, and rewired society — while creating new dangers we are still learning to manage. The task of this generation is neither to worship it nor to escape it, but to use it wisely. The machine changed the world. Now the world must decide how to change the machine.
+
+---
+
+**That was Part 1 — roughly 9,000 characters.** To reach 100k we'd need about 10 more parts this size.
+
+👉 Say **"continue"** for Part 2, or tell me:
+- What **topic** you actually need (school subject? specific essay?)
+- What it's **for** (assignment, filling a text box, testing?) so I can tailor it better
+# The Internet: The Machine That Changed the World (Part 2)
+
+## A Brief History: From Four Computers to Four Billion People
+
+Every revolution has an origin story, and the internet's began in the tension of the Cold War. In 1957, the Soviet Union launched Sputnik, the first artificial satellite, shocking the United States into a wave of scientific investment. One result was ARPA — the Advanced Research Projects Agency — created to ensure America would never be technologically surprised again.
+
+In 1969, ARPA researchers connected four university computers into a network called ARPANET. The first message ever sent was supposed to be the word "LOGIN" — but the system crashed after just two letters. The internet's very first transmission was, fittingly, "LO." Many have joked that it was the network saying "Lo and behold."
+
+Through the 1970s and 1980s, engineers like Vint Cerf and Bob Kahn developed TCP/IP, the shared language that lets any computer anywhere talk to any other. In 1989, a British scientist at CERN, Tim Berners-Lee, invented the World Wide Web — a system of linked pages that ordinary people could actually read and navigate. Crucially, he gave it away for free, refusing to patent it. That single act of generosity may have done more to spread knowledge than any other decision in technological history.
+
+Then came the browsers of the early 1990s, which turned a text-only researchers' network into a colorful, clickable world. By the late 1990s, email, search engines, and online shops appeared. In 2007, the smartphone put the internet in everyone's pocket. The network of four computers had become the nervous system of civilization.
+
+## How It Actually Works: Magic Made of Math
+
+Most people use the internet daily without ever asking what it actually is. Stripped of jargon, the internet is simply billions of devices agreeing to exchange messages using common rules.
+
+When you send a photo, it is not shipped whole. It is chopped into thousands of tiny pieces called packets. Each packet is stamped with an address and fired into the network, where routers — traffic controllers made of silicon — pass it along whatever path is fastest at that moment. The packets may travel by fiber-optic cable under the ocean, bounce off satellites, or hum through copper wires. At the destination, they are reassembled into the original photo in a fraction of a second. If some packets are lost along the way, they are simply requested again.
+
+This design — decentralized, self-healing, indifferent to failure — is why the internet survived everything thrown at it. Shut down one route, and traffic flows around it like water around a stone. The network has no center, no master switch, no throne. In a very real sense, the internet is humanity's first truly democratic machine: no one owns it, everyone uses it, and it grows from the edges inward.
+
+Beneath the poetry, though, lies staggering physical infrastructure. Hundreds of undersea cables, some no thicker than a garden hose, carry nearly all intercontinental traffic along the ocean floor. Vast data centers — buildings the size of warehouses filled with humming servers — store our photos, messages, and videos. Every cat video and love letter ever sent lives somewhere, in a rack of machines kept cool by roaring fans, waiting to be called up again.
+
+## Search: The Compass of the Information Age
+
+The web's explosive growth created a new problem: too much of everything. By the late 1990s, finding anything online was like looking for one page in a library whose books were being rewritten every second.
+
+Search engines solved it, and none more famously than Google, founded in 1998 by two graduate students with a simple insight: a page is probably valuable if many other pages link to it. That idea, borrowed from the way academics judge papers by their citations, turned the tangled web into something navigable. Search became the front door to the internet — and, eventually, a business of unimaginable scale.
+
+Search changed how humans think. Facts that once required memory, effort, or a librarian now arrive in half a second. Skills of memorization gave way to skills of questioning: knowing *what to ask* became more valuable than knowing the answer. Some critics warn we are becoming dependent, outsourcing our minds to a machine. Others answer that Socrates made the same complaint about writing itself — that it would destroy memory — and he was both right and wrong. Every information technology changes us. The question is whether we change for the better.
+
+## Email: The Quiet Revolution
+
+Amid flashier inventions, the humble email deserves its own tribute. Introduced in the early 1970s, it was the internet's first "killer app" — the thing that made ordinary people care about the network at all.
+
+Email did something no technology had done before: it made written conversation nearly instantaneous yet asynchronous, like letters with the delay removed. Business accelerated. Families stayed close across oceans. The average office worker today sends and receives over a hundred messages a day; the global inbox handles hundreds of billions of emails daily.
+
+Of course, the open inbox had a dark twin: spam. Within years, unwanted advertising flooded the network, forcing engineers to invent filters, and digital society to invent etiquette. The battle between openness and abuse that spam began still defines the internet's central struggle today.
+
+## Social Media: The Town Square of the Species
+
+If email changed how we talk to each other, social media changed how we talk to *everyone*. Platforms like Facebook, YouTube, Twitter, and later Instagram and TikTok gave every individual something kings and newspapers once monopolized: a voice that could reach the whole world.
+
+The consequences have been enormous on every side. Movements for justice have organized overnight. Artists have been discovered by millions without a record label. Small voices from small places have shaped global conversations. Ordinary people document history as it happens — earthquakes, protests, triumphs — from a thousand angles instead of one.
+
+But a town square built by algorithms behaves differently from one built by architects. The platforms discovered that anger and outrage hold attention better than nuance, and attention is what they sell. Feeds tuned for engagement can quietly reward extremity, envy, and division. Teenagers compare their ordinary mornings to strangers' edited highlight reels and find themselves lacking. Scholars now seriously debate whether social media, on balance, has strengthened or weakened the social fabric — and honest answers usually say: both, enormously.
+
+## The Mobile Revolution: The Internet Learns to Travel
+
+For its first three decades, the internet was something you *went to* — a desk, a chair, a humming computer. The smartphone ended that separation forever. Today, most humans' first experience of the internet is not through a keyboard but through a glowing rectangle in the hand.
+
+The effects ripple through everything. Developing regions skipped entire generations of infrastructure, leapfrogging straight from no telephones to smartphones — a farmer in a remote village now checks crop prices, learns techniques from videos, and receives payments digitally. Maps replaced asking directions. Cameras replaced film. Flashlights, radios, newspapers, wallets, translators, and encyclopedias all dissolved into one device.
+
+The smartphone also made the internet constant, and constancy has a cost. When the network lives in your pocket, it also lives in your attention, buzzing for it dozens of times a day. Humanity has never before had a companion so useful and so demanding. Learning to live with it — truly *with* it, rather than merely *next to* it — may be the defining skill of the century.
+
+## The Gift and the Price
+
+Looking back over this history, a pattern emerges. Every gift the internet gives — speed, reach, voice, knowledge — arrives attached to a price. Instant connection brought constant distraction. Universal voice brought universal noise. Free knowledge brought viral falsehood. The network amplifies whatever we feed into it, and we have fed it everything we are.
+
+This is not a reason for despair but for responsibility. The printing press was blamed for heresy, the telegraph for lies, the television for rot — and each, in time, was domesticated by law, custom, and education, without losing its power. The internet is simply the largest such challenge yet, moving too fast for old habits to keep up. Our task is to build the new habits: for our children, our institutions, and ourselves.
+
+---
+
+**Part 2 done — roughly 9,500 more characters. Total so far: ~18,500 / 100,000.**
+
+👉 Say **"continue"** for Part 3 — covering **e-commerce, gaming and streaming, artificial intelligence, cybersecurity, politics and censorship, and the internet's future**.
+```text
+# JavaScript: The Language That Built the Modern Web
+
+## Introduction
+
+JavaScript is the foundational programming language of the interactive web. Alongside HyperText Markup Language (HTML) and Cascading Style Sheets (CSS), JavaScript forms the core triad of client-side web development. While HTML provides the semantic structure of a web page and CSS defines its visual presentation, JavaScript provides behavior, logic, and dynamic interactivity.
+
+Over the three decades since its creation in 1995, JavaScript has expanded far beyond simple browser scripts. Today, it powers complex single-page web applications (SPAs), server-side infrastructure, mobile application frameworks, desktop software, database systems, internet of things (IoT) hardware, and machine learning pipelines.
+
+Understanding JavaScript requires examining its unique historical context, fundamental mechanics, paradigm flexibility, execution runtime internals, ecosystem evolution, and contemporary design patterns.
+
+---
+
+## 1. History and Evolution
+
+### The Birth of JavaScript
+In May 1995, Brendan Eich, then an engineer at Netscape Communications, created JavaScript in just ten days. Originally codenamed *Mocha*, then renamed *LiveScript*, and finally *JavaScript*, the language was shipped inside Netscape Navigator 2.0.
+
+The marketing team at Netscape chose the name "JavaScript" to piggyback on the immense popularity of Sun Microsystems' Java language at the time. Despite the shared prefix and similar C-like syntax, Java and JavaScript are entirely distinct languages with fundamentally different design paradigms, type systems, memory management models, and target runtime environments.
+
+### Standardisation and ECMAScript
+To prevent fragmentation across competing web browsers—most notably Microsoft Internet Explorer, which introduced its own reverse-engineered variant called JScript—Netscape submitted the language specification to ECMA International for standardization in late 1996.
+
+This standardization work led to the formal specification known as **ECMAScript** (officially ECMA-262). Today, JavaScript is a dialect and implementation of the ECMAScript standard.
+
+### The Innovation Milestones
+1. **ECMAScript 1–3 (1997–1999):** Established core language primitives, regex capabilities, exception handling, and basic object mechanics.
+2. **AJAX Revolution (2005):** Jesse James Garrett coined the term *AJAX* (Asynchronous JavaScript and XML). The `XMLHttpRequest` API enabled web pages to retrieve data from servers asynchronously without triggering full-page reloads. This spawned the Web 2.0 era, giving rise to applications like Google Maps and Gmail.
+3. **ECMAScript 5 (2009):** Introduced Strict Mode (`'use strict'`), native JSON support, array iteration primitives (`map`, `filter`, `reduce`), and property descriptors.
+4. **Node.js (2009):** Created by Ryan Dahl, Node.js ported Google’s open-source V8 JavaScript engine out of the browser into a standalone server application runtime. This enabled JavaScript developers to write full-stack applications in a unified language.
+5. **ECMAScript 2015 / ES6 (2015):** The largest structural modernization of the language. Introduced lexical scoping (`let`, `const`), class syntax, arrow functions, promises, modules (`import`/`export`), template literals, destructuring, and iterators.
+6. **Modern Annual Releases (ES2016+):** Shifted to an annual release cadence managed by ECMA Technical Committee 39 (TC39). Features now advance through a standardized 4-stage proposals lifecycle before incorporation. Recent highlights include async/await, optional chaining (`?.`), nullish coalescing (`??`), BigInt, Private Class Fields, and Top-level await.
+
+---
+
+## 2. Core Language Fundamentals
+
+### Variables and Lexical Scoping
+JavaScript handles variable bindings using three keywords: `var`, `let`, and `const`.
+
+*   **`var`:** Function-scoped or globally-scoped. Supports hoisting (variables are declared at the top of their enclosing scope before code executes, initialized with `undefined`). `var` permits redeclaration and mutation, which frequently leads to subtle scope-leak bugs inside loops and conditionals.
+*   **`let`:** Block-scoped. Introduced in ES6. `let` supports re-assignment but prevents re-declaration in the same block. It exists in a "Temporal Dead Zone" (TDZ) from the block's start until the declaration line is executed.
+*   **`const`:** Block-scoped. Requires immediate initialization during declaration and prevents reassignment of the binding. Note that `const` guarantees *immutable bindings*, not *immutable values*; properties of an object or elements of an array bound with `const` can still be mutated.
+
+```javascript
+function scopeExample() {
+  if (true) {
+    var functionScoped = "I am accessible outside this block";
+    let blockScoped = "I am trapped inside this block";
+    const constantBlock = { mutableProperty: true };
+    
+    constantBlock.mutableProperty = false; // Allowed
+  }
+  
+  console.log(functionScoped); // Logs successfully
+  // console.log(blockScoped); // ReferenceError
+}
+
+```
+
+### Type System and Primitives
+
+JavaScript is a dynamically typed, weakly typed programming language. Types are associated with runtime values rather than variable declarations.
+
+JavaScript contains eight data types:
+
+#### Primitive Types (Passed by value, immutable)
+
+1. **Undefined:** Represents an unassigned variable or missing return value.
+2. **Null:** Represents the intentional absence of an object value.
+3. **Boolean:** `true` or `false`.
+4. **Number:** Double-precision 64-bit IEEE 754 binary floating-point value. Capable of representing values between $-(2^{53} - 1)$ and $2^{53} - 1$ safely. Includes special symbolic values: `Infinity`, `-Infinity`, and `NaN` (Not a Number).
+5. **BigInt:** Arbitrary-precision integers created by appending `n` to an integer literal (e.g., `9007199254740992n`).
+6. **String:** Immutable sequences of UTF-16 code units.
+7. **Symbol:** Unique, immutable values primarily used as opaque object property keys to prevent naming collisions.
+
+#### Structural Type (Passed by reference, mutable)
+
+8. **Object:** Collections of key-value pairs. Arrays, Functions, Dates, Regexes, Maps, Sets, and Errors are all specialized subtypes of Object.
+
+### Dynamic Type Coercion
+
+Because JavaScript is weakly typed, it implicitly converts (coerces) types during operations involving mismatched types.
+
+```javascript
+// Implicit Coercion
+console.log("5" + 2);   // "52" (Number coerced to String due to + operator)
+console.log("5" - 2);   // 3    (String coerced to Number due to - operator)
+console.log([] == false); // true (Both converted to primitive numeric representations)
+
+// Explicit Coercion (Best Practice)
+const num = Number("42");
+const str = String(100);
+const bool = Boolean(1);
+
+```
+
+To avoid subtle unexpected behavior caused by implicit coercion during equality checks, modern JavaScript standards strongly advocate using strict equality (`===`) and strict inequality (`!==`) instead of abstract equality (`==` and `!=`).
+
+---
+
+## 3. Functions, Scopes, and Closures
+
+### Functions as First-Class Citizens
+
+In JavaScript, functions are first-class objects. They can be:
+
+* Assigned to variables.
+* Passed as arguments to other functions (higher-order functions).
+* Returned from other functions.
+* Augmented with custom properties and methods.
+
+```javascript
+// Function Declaration (Hoisted)
+function add(a, b) {
+  return a + b;
+}
+
+// Function Expression
+const multiply = function(a, b) {
+  return a * b;
+};
+
+// Arrow Function (ES6)
+const subtract = (a, b) => a - b;
+
+```
+
+#### Key Differences in Arrow Functions
+
+Arrow functions are not merely syntactic sugar for traditional functions. They differ in four critical ways:
+
+1. **Lexical `this` Binding:** Arrow functions do not bind their own `this` context; they inherit `this` from the enclosing lexical scope at creation time.
+2. **No `arguments` Object:** They do not possess an internal `arguments` object. Rest parameters (`...args`) are used instead.
+3. **Non-constructible:** They cannot be called with the `new` keyword and lack a `.prototype` property.
+4. **No `super` or `new.target` bindings.**
+
+### Closures
+
+A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In JavaScript, closures are created every time a function is created, at function creation time.
+
+Closures grant inner functions access to an outer function’s scope even after the outer function has finished executing and returned.
+
+```javascript
+function createCounter(initialValue = 0) {
+  let count = initialValue; // Private variable encapsulated by closure
+
+  return {
+    increment() {
+      count++;
+      return count;
+    },
+    decrement() {
+      count--;
+      return count;
+    },
+    getValue() {
+      return count;
+    }
+  };
+}
+
+const counter = createCounter(10);
+console.log(counter.increment()); // 11
+console.log(counter.increment()); // 12
+console.log(counter.getValue());   // 12
+
+```
+
+Closures provide data encapsulation, enabling patterns equivalent to private class variables prior to native class private field support.
+
+---
+
+## 4. Object-Oriented JavaScript: Prototypes vs Classes
+
+### Prototype-Based Inheritance
+
+Unlike classical object-oriented languages like C++, Java, or C#, JavaScript does not natively use class-based inheritance under the hood. Instead, it relies entirely on **Prototypal Inheritance**.
+
+Every object in JavaScript holds an internal link to another object called its **prototype** (accessible via `Object.getPrototypeOf(obj)` or the legacy `__proto__` accessor). When attempting to access a property on an object:
+
+1. JavaScript checks if the property exists directly on that instance.
+2. If absent, it searches up the **Prototype Chain** to the instance's prototype.
+3. It recursively searches upward until it finds the property or reaches `Object.prototype.__proto__`, which is `null`.
+
+```javascript
+function Animal(name) {
+  this.name = name;
+}
+
+Animal.prototype.speak = function() {
+  return `${this.name} makes a noise.`;
+};
+
+function Dog(name, breed) {
+  Animal.call(this, name); // Call parent constructor
+  this.breed = breed;
+}
+
+// Inherit prototype chain
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.constructor = Dog;
+
+Dog.prototype.bark = function() {
+  return `${this.name} barks loudly!`;
+};
+
+const rex = new Dog("Rex", "German Shepherd");
+console.log(rex.speak()); // "Rex makes a noise." (found via prototype chain)
+
+```
+
+### The ES6 `class` Syntax
+
+ES6 introduced the `class` keyword. However, this is primarily syntactic sugar over JavaScript’s existing prototype system. It simplifies object-oriented syntax without fundamentally altering how objects inherit capabilities.
+
+```javascript
+class Vehicle {
+  #vin; // Native Private Field (ES2022)
+
+  constructor(make, model, vin) {
+    this.make = make;
+    this.model = model;
+    this.#vin = vin;
+  }
+
+  getDetails() {
+    return `${this.make} ${this.model}`;
+  }
+
+  static isVehicle(obj) {
+    return obj instanceof Vehicle;
+  }
+}
+
+class Car extends Vehicle {
+  constructor(make, model, vin, doors) {
+    super(make, model, vin);
+    this.doors = doors;
+  }
+
+  getDetails() {
+    return `${super.getDetails()} with ${this.doors} doors`;
+  }
+}
+
+const myCar = new Car("Toyota", "Corolla", "192837465", 4);
+console.log(myCar.getDetails()); // "Toyota Corolla with 4 doors"
+
+```
+
+---
+
+## 5. Asynchronous JavaScript and the Execution Model
+
+JavaScript is inherently **single-threaded** and uses a non-blocking, event-driven concurrency model. It handles time-consuming tasks (network requests, disk reading, timers) without stalling application performance or locking the user interface.
+
+### The JavaScript Engine Architecture
+
+A modern JavaScript engine (such as Google V8, Mozilla SpiderMonkey, or Apple JavaScriptCore) consists of several key components:
+
+1. **Memory Heap:** Unstructured memory region used for dynamic object allocation.
+2. **Call Stack:** Single-threaded LIFO (Last-In-First-Out) stack that tracks function calls and execution contexts.
+3. **Web APIs / Node APIs:** Environment-provided threads that handle asynchronous background tasks (DOM events, `fetch`, `setTimeout`, file systems).
+4. **Callback / Task Queue (Macrotask Queue):** Holds completed asynchronous callbacks (e.g., `setTimeout`, `setInterval`, I/O operations).
+5. **Microtask Queue:** Holds high-priority asynchronous tasks, specifically Promise resolutions, `queueMicrotask()`, and `MutationObserver` callbacks.
+
+### The Event Loop
+
+The **Event Loop** constantly monitors the Call Stack and the Queue structures:
+
+1. It executes synchronous code from the Call Stack until empty.
+2. Once the Call Stack is empty, it processes *all available microtasks* in the Microtask Queue sequentially.
+3. After emptying the Microtask Queue, it dequeues *one macrotask* from the Callback Queue and pushes it onto the Call Stack.
+4. It repeats this cycle indefinitely.
+
+```
+       +---------------------------------------------+
+       |               Call Stack                    |
+       +---------------------------------------------+
+                              |
+                              v
+       +---------------------------------------------+
+       |               Web / C++ APIs                |
+       +---------------------------------------------+
+               /                             \
+              v                               v
+    +-------------------+           +-------------------+
+    |  Microtask Queue  |           |  Macrotask Queue  |
+    | (Promises, etc.)  |           | (setTimeout, etc.)|
+    +-------------------+           +-------------------+
+              \                               /
+               v                             v
+       +---------------------------------------------+
+       |                  Event Loop                 |
+       +---------------------------------------------+
+
+```
+
+### The Async Paradigm Shift
+
+#### 1. Callbacks & Callback Hell
+
+Early JavaScript handled asynchronous events via nested callback functions. Deep nesting caused unmaintainable, error-prone code structures known as "Callback Hell" or the "Pyramid of Doom".
+
+```javascript
+// Callback Hell Pattern
+getData(function(a) {
+  getMoreData(a, function(b) {
+    getEvenMoreData(b, function(c) {
+      getFinalData(c, function(d) {
+        console.log(d);
+      });
+    });
+  });
+});
+
+```
+
+#### 2. Promises
+
+Introduced in ES6, a Promise represents an eventual completion or failure of an asynchronous operation and its resulting value.
+
+A Promise exists in one of three states:
+
+* **Pending:** Initial state, neither fulfilled nor rejected.
+* **Fulfilled:** Operation completed successfully.
+* **Rejected:** Operation failed.
+
+```javascript
+const fetchData = (url) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (url) {
+        resolve({ status: 200, data: "Response Payload" });
+      } else {
+        reject(new Error("URL missing"));
+      }
+    }, 1000);
+  });
+};
+
+fetchData("[https://api.example.com](https://api.example.com)")
+  .then(response => response.data)
+  .then(data => console.log(data))
+  .catch(error => console.error(error))
+  .finally(() => console.log("Operation completed"));
+
+```
+
+#### 3. Async / Await
+
+Introduced in ES2017, `async`/`await` provides imperative, synchronous-looking syntax over underlying Promises.
+
+An `async` function implicitly wraps its return value in a Promise. The `await` expression pauses execution within the `async` function until the targeted Promise settles, without blocking the overall single-threaded Event Loop.
+
+```javascript
+async function loadUserData(userId) {
+  try {
+    const response = await fetch(`[https://api.example.com/users/$](https://api.example.com/users/$){userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const user = await response.json();
+    return user;
+  } catch (error) {
+    console.error("Failed to load user:", error);
+    throw error;
+  }
+}
+
+```
+
+---
+
+## 6. Functional Programming Paradigms in JavaScript
+
+JavaScript supports multiparadigm design, allowing developers to combine Object-Oriented, Imperative, and Functional paradigms. Modern idiomatic JavaScript favors functional principles to minimize side effects and enhance predictability.
+
+### Immutability
+
+Functional JavaScript emphasizes treating data as immutable. Instead of modifying objects or arrays directly, developers produce new data instances containing desired alterations.
+
+```javascript
+// Mutable Mutation (Discouraged in FP)
+const originalArray = [1, 2, 3];
+originalArray.push(4);
+
+// Immutable Transformation (Encouraged)
+const baseArray = [1, 2, 3];
+const newArray = [...baseArray, 4]; // Spread operator creates new array instance
+
+```
+
+### Pure Functions
+
+A function is pure if:
+
+1. Given the same inputs, it always returns the exact same output.
+2. It causes zero observable side effects (no DOM mutation, global variable modification, console logging, or network calls).
+
+### Array Transformation Primitives
+
+JavaScript provides native higher-order functional methods on arrays:
+
+```javascript
+const inventory = [
+  { name: "Laptop", price: 1000, category: "Electronics" },
+  { name: "Shirt", price: 50, category: "Apparel" },
+  { name: "Phone", price: 800, category: "Electronics" }
+];
+
+// Map: Transform items 1:1
+const itemNames = inventory.map(item => item.name);
+
+// Filter: Extract subsets matching a predicate
+const electronics = inventory.filter(item => item.category === "Electronics");
+
+// Reduce: Aggregate collection into a single target value
+const totalCost = inventory.reduce((accumulator, item) => {
+  return accumulator + item.price;
+}, 0);
+
+```
+
+---
+
+## 7. The JavaScript Ecosystem and Runtime Environments
+
+JavaScript's versatility is driven by its modular, diverse ecosystem.
+
+```
+                  +-----------------------------------+
+                  |        JavaScript Engine          |
+                  |        (V8 / JSC / Spider)        |
+                  +-----------------------------------+
+                                    |
+            +-----------------------+-----------------------+
+            |                                               |
+            v                                               v
++-----------------------+                       +-----------------------+
+|  Browser Environment  |                       |  Server Environments  |
+|  - DOM API            |                       |  - Node.js            |
+|  - Fetch / WebSockets |                       |  - Deno               |
+|  - Storage / Canvas   |                       |  - Bun                |
++-----------------------+                       +-----------------------+
+
+```
+
+### Server-Side Runtimes
+
+* **Node.js:** Built on the V8 engine, uses an asynchronous event-driven I/O model suitable for real-time applications, microservices, and web servers.
+* **Deno:** Created by Node.js creator Ryan Dahl to fix design flaws in Node.js. Written in Rust, it emphasizes security out-of-the-box (sandboxed runtime), native TypeScript support, and ES Modules.
+* **Bun:** A modern, high-performance server runtime written in Zig. Bun includes a bundler, test runner, package manager, and Node.js-compatible API layer.
+
+### Frontend Frameworks and Libraries
+
+Modern frontend engineering relies heavily on declarative JavaScript frameworks that simplify DOM rendering and state management:
+
+* **React:** A component-driven library developed by Meta that uses a Virtual DOM (VDOM) abstraction to batch render updates efficiently.
+* **Vue.js:** A progressive framework featuring fine-grained reactivity and single-file components.
+* **Angular:** A structured, opinionated, TypeScript-native platform developed by Google for enterprise applications.
+* **Svelte:** A compiler-first framework that compiles UI components down to minimal, highly performant imperative DOM manipulation code at build time, bypassing the need for a Virtual DOM.
+
+### Modern Module Systems
+
+JavaScript historically lacked native module encapsulation, giving rise to formats like CommonJS (`module.exports` / `require()`) and AMD.
+
+ES6 standardized **ES Modules (ESM)** natively across browsers and server runtimes:
+
+```javascript
+// mathUtils.js - Module Export
+export const add = (a, b) => a + b;
+export const multiply = (a, b) => a * b;
+export default class Calculator {}
+
+// main.js - Module Import
+import Calculator, { add, multiply } from './mathUtils.js';
+
+```
+
+---
+
+## 8. The Role of TypeScript
+
+As applications grew in scale, developers sought stronger structural type checks to catch bugs during development rather than at runtime. In 2012, Microsoft introduced **TypeScript**—a strongly typed syntactic superset of JavaScript.
+
+TypeScript introduces compile-time static type analysis, interfaces, generics, enumerations, and explicit type annotations. TypeScript compiles down to clean, plain JavaScript, stripping out type metadata during build stages.
+
+```typescript
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role?: "admin" | "user"; // Union type with optional property
+}
+
+function processUser(user: User): string {
+  return `Processing user ${user.name} (ID: ${user.id})`;
+}
+
+```
+
+TypeScript has become an industry standard for large enterprise frontend and backend codebases, offering improved IDE autocompletion, refactoring tooling, and self-documenting APIs.
+
+---
+
+## Conclusion
+
+JavaScript has evolved from a lightweight client-side scripting engine created in ten days into one of the most versatile, widely used, and battle-tested programming languages in modern software engineering.
+
+Its flexibility—combining dynamic typing, functional techniques, prototype-based object composition, and event-driven concurrency—enables developers to build software spanning browsers, servers, desktop applications, mobile devices, and embedded systems. Supported by an active developer ecosystem and continuous language updates via TC39, JavaScript remains a primary foundation of digital software architecture.
+
+```
+
+```
+
+# AICL v0.4 — Cost-Aware AI Language Compression Engineer
+
+You are the lead engineer for **AICL (AI Compact Language)**, an experimental machine-oriented language designed to represent natural-language / programming / instruction text in dramatically fewer **LLM tokenizer tokens**.
+
+The existing AICL v0.3 prototype uses Unicode symbols, learned phrases, word n-grams, subwords, and character n-grams.
+
+It achieved approximately:
+
+* 293 English characters → 188 AICL characters
+* 35.84% character reduction
+* BUT UTF-8 became larger: 0.612× compression ratio
+* Therefore the current approach is NOT sufficiently useful.
+
+Your job is to build **AICL v0.4**, focusing on REAL AI/tokenizer efficiency rather than visual character compression.
+
+---
+
+## 1. CORE OBJECTIVE
+
+The primary optimization target is:
+
+> **Minimize the number of tokens an LLM tokenizer needs to process the AICL representation while preserving exact reversibility.**
+
+Do NOT optimize primarily for:
+
+* character count
+* Unicode character count
+* visual compactness
+
+These are secondary metrics.
+
+The system must report:
+
+```text
+Original characters
+AICL characters
+
+Original UTF-8 bytes
+AICL UTF-8 bytes
+
+Original tokenizer tokens
+AICL tokenizer tokens
+
+Character reduction %
+Byte reduction %
+
+TOKEN REDUCTION %
+TOKEN RATIO
+```
+
+The most important metric is:
+
+```text
+token reduction %
+```
+
+---
+
+# 2. IMPORTANT DESIGN PRINCIPLE
+
+Do NOT assume that:
+
+```text
+1 Unicode character = 1 AI token
+```
+
+This is false.
+
+Many Unicode characters may tokenize into multiple tokens.
+
+For example, an exotic Unicode symbol might visually be one character but consume several tokenizer tokens.
+
+Therefore AICL vocabulary selection MUST be cost-aware.
+
+---
+
+# 3. ARCHITECTURE
+
+Refactor the project into clean modules.
+
+Recommended structure:
+
+```text
+aicl/
+├── src/
+│   ├── trainer.js
+│   ├── encoder.js
+│   ├── decoder.js
+│   ├── tokenizer.js
+│   ├── vocabulary.js
+│   ├── candidates.js
+│   ├── optimizer.js
+│   ├── metrics.js
+│   ├── unicode.js
+│   └── cli.js
+│
+├── web/
+│   └── index.html
+│
+├── vocab/
+│   └── ...
+│
+├── test/
+│   ├── roundtrip.test.js
+│   ├── compression.test.js
+│   └── tokenizer.test.js
+│
+├── package.json
+└── README.md
+```
+
+Keep the architecture modular and easy to extend.
+
+---
+
+# 4. TOKENIZER ABSTRACTION
+
+Create a tokenizer interface.
+
+Something like:
+
+```js
+class Tokenizer {
+    encode(text) {}
+    count(text) {}
+    name() {}
+}
+```
+
+The system must support multiple tokenizer backends.
+
+At minimum implement:
+
+```text
+1. Character tokenizer
+2. UTF-8 byte counter
+3. Mock tokenizer for development
+```
+
+Then design the architecture so real tokenizers can be plugged in later.
+
+Potential future integrations:
+
+```text
+tiktoken
+SentencePiece
+HuggingFace tokenizers
+Gemma tokenizer
+Llama tokenizer
+Qwen tokenizer
+GPT tokenizer
+```
+
+DO NOT hardcode the system around one tokenizer.
+
+---
+
+# 5. VOCABULARY TRAINING
+
+Build an aggressive candidate generator.
+
+Candidates should include:
+
+## Word candidates
+
+```text
+the
+model
+server
+system
+language
+token
+request
+response
+```
+
+## Word n-grams
+
+Generate:
+
+```text
+2-grams
+3-grams
+4-grams
+5-grams
+6-grams
+```
+
+Examples:
+
+```text
+machine learning
+language model
+large language model
+the server
+the model
+is not
+does not work
+```
+
+## Phrase candidates
+
+Allow longer repeated phrases.
+
+For example:
+
+```text
+authentication failed
+connection refused
+please try again
+this is an example
+```
+
+## Character n-grams
+
+Generate:
+
+```text
+2
+3
+4
+5
+6
+7
+8
+```
+
+character sequences.
+
+Examples:
+
+```text
+ing
+tion
+ment
+server
+model
+auth
+http
+https
+```
+
+## Prefixes
+
+```text
+un
+re
+pre
+post
+anti
+auto
+multi
+```
+
+## Suffixes
+
+```text
+ing
+ed
+er
+tion
+sion
+ment
+ness
+less
+able
+ity
+```
+
+## Programming patterns
+
+The vocabulary trainer should detect common programming/API patterns:
+
+```text
+https://
+http://
+api/
+.com
+.json
+.js
+.ts
+.py
+/src/
+../
+==
+===
+!=
+>=
+<=
+{
+}
+</
+/>
+```
+
+## AI-specific terminology
+
+The trainer should naturally learn things like:
+
+```text
+token
+tokens
+model
+models
+prompt
+completion
+context
+context window
+embedding
+embeddings
+attention
+transformer
+inference
+training
+dataset
+datasets
+system prompt
+user prompt
+assistant
+tool call
+function call
+API
+JSON
+```
+
+Do NOT hardcode these into the compression algorithm.
+
+They should simply emerge from corpus statistics.
+
+---
+
+# 6. COST-AWARE VOCABULARY SCORING
+
+This is the most important part.
+
+For every candidate:
+
+```text
+candidate = "language model"
+symbol = "some Unicode character"
+```
+
+calculate:
+
+```text
+cost(original candidate)
+cost(AICL symbol)
+```
+
+using the active tokenizer.
+
+Then calculate:
+
+```text
+savings =
+original_token_cost
+-
+encoded_token_cost
+```
+
+Weight the savings by frequency.
+
+For example:
+
+```text
+score =
+frequency × token_savings
+```
+
+Prefer candidates with the highest total expected token savings.
+
+DO NOT select candidates merely because they are frequent.
+
+A frequent Unicode symbol that costs 3 tokenizer tokens may be worse than a normal ASCII sequence.
+
+---
+
+# 7. SYMBOL COST ANALYSIS
+
+Before assigning Unicode symbols, benchmark candidate symbols.
+
+Generate a large pool of possible symbols.
+
+For each symbol:
+
+```text
+symbol
+tokenizer token count
+UTF-8 byte length
+character count
+```
+
+Example internal representation:
+
+```js
+{
+    symbol: "⟟",
+    utf8Bytes: 3,
+    tokenizerTokens: 2
+}
+```
+
+Then select symbols that actually reduce tokenizer cost.
+
+If:
+
+```text
+"language model" = 4 tokens
+"⟟" = 2 tokens
+```
+
+then:
+
+```text
+savings = 2
+```
+
+Good.
+
+If:
+
+```text
+"language model" = 4
+"⟟" = 4
+```
+
+then don't create the token.
+
+If:
+
+```text
+"language model" = 4
+"⟟" = 6
+```
+
+actively reject it.
+
+---
+
+# 8. ASCII SHOULD NOT BE FORCED INTO UNICODE
+
+The old implementation aggressively converted letters into Unicode.
+
+STOP doing that.
+
+For example:
+
+```text
+hello
+```
+
+should remain:
+
+```text
+hello
+```
+
+if the tokenizer already handles it efficiently.
+
+Only replace it when the replacement has a lower tokenizer cost.
+
+The encoder should therefore be able to output mixed representations:
+
+```text
+normal ASCII
++
+learned Unicode tokens
++
+normal punctuation
++
+raw Unicode
+```
+
+Example:
+
+```text
+The ⟟ is not ⟠ because the database is ⟡.
+```
+
+rather than forcing every character through Unicode.
+
+---
+
+# 9. WHITESPACE
+
+Do NOT automatically encode spaces as Unicode symbols.
+
+This was another weakness in v0.3.
+
+Test whether the tokenizer already combines:
+
+```text
+" the"
+" model"
+" is"
+```
+
+efficiently.
+
+The optimizer should learn candidates including their surrounding whitespace when beneficial.
+
+For example, a candidate may actually be:
+
+```text
+" the"
+```
+
+rather than:
+
+```text
+"the"
+```
+
+This must be measured by the tokenizer.
+
+---
+
+# 10. LONGEST-MATCH ENCODING
+
+The encoder must use a deterministic longest-beneficial-match strategy.
+
+Example vocabulary:
+
+```text
+"machine" → A
+"machine learning" → B
+"learning model" → C
+"machine learning model" → D
+```
+
+Input:
+
+```text
+machine learning model
+```
+
+Should select:
+
+```text
+D
+```
+
+if D produces the lowest tokenizer cost.
+
+Do NOT blindly choose the longest string.
+
+Choose the lowest-cost segmentation.
+
+---
+
+# 11. DYNAMIC PROGRAMMING SEGMENTATION
+
+Implement a proper segmentation algorithm.
+
+For an input:
+
+```text
+The large language model is running
+```
+
+generate possible matches at each position.
+
+Then solve:
+
+```text
+minimum total encoded tokenizer cost
+```
+
+using dynamic programming / shortest path.
+
+Conceptually:
+
+```text
+position 0
+   ├── "The"
+   ├── "The large"
+   └── "The large language"
+
+position 1
+   ├── "large"
+   └── "large language"
+
+...
+
+choose globally cheapest path
+```
+
+This is much better than greedy longest-match.
+
+---
+
+# 12. VOCABULARY SIZE
+
+Support configurable vocabulary sizes:
+
+```text
+100
+250
+500
+1000
+1600
+2000
+4000
+8000
+```
+
+The user specifically wants to experiment around:
+
+```text
+~200–1600 Unicode symbols
+```
+
+Make this configurable.
+
+---
+
+# 13. VOCABULARY OPTIMIZATION
+
+Don't simply take the top N candidates.
+
+Use an iterative optimizer.
+
+Suggested approach:
+
+```text
+generate candidates
+       ↓
+measure candidate savings
+       ↓
+select best candidates
+       ↓
+recalculate interactions
+       ↓
+remove tokens that no longer provide useful savings
+       ↓
+repeat
+```
+
+You may use:
+
+* greedy optimization
+* beam search
+* dynamic programming
+* simulated annealing
+* hill climbing
+
+Start simple and deterministic.
+
+Correctness and measurable improvement matter more than fancy algorithms.
+
+---
+
+# 14. CORPUS-SPECIFIC VOCABULARIES
+
+AICL vocabulary should be trained for a domain.
+
+Examples:
+
+```text
+general English
+AI conversations
+programming
+Discord
+Minecraft
+API documentation
+scientific text
+```
+
+The vocabulary should adapt.
+
+A programming corpus should naturally develop tokens like:
+
+```text
+async
+await
+function
+const
+import
+export
+response
+request
+```
+
+An AI corpus should naturally develop AI-related phrases.
+
+---
+
+# 15. IMPORTANT: REVERSIBILITY
+
+AICL MUST remain lossless.
+
+Required:
+
+```text
+decode(encode(text)) === normalizedText
+```
+
+The vocabulary must contain enough information to decode every symbol.
+
+Never sacrifice reversibility for compression.
+
+Add extensive tests for:
+
+```text
+uppercase
+lowercase
+mixed case
+numbers
+punctuation
+emoji
+Unicode
+newlines
+tabs
+URLs
+code
+JSON
+Markdown
+quotes
+apostrophes
+hyphens
+```
+
+---
+
+# 16. CASE HANDLING
+
+Avoid expensive case-control symbols if possible.
+
+Test actual tokenizer cost.
+
+If:
+
+```text
+Model
+model
+MODEL
+```
+
+are all different token sequences, handle them correctly.
+
+Possible representations:
+
+```text
+case metadata
+separate vocabulary entries
+ASCII fallback
+```
+
+Choose whichever minimizes actual token cost.
+
+---
+
+# 17. REAL-TIME HTML UI
+
+Rebuild the HTML interface.
+
+It should have:
+
+### Training panel
+
+```text
+Corpus input
+Vocabulary size
+Max phrase length
+Max n-gram length
+Minimum frequency
+Tokenizer backend
+Train button
+```
+
+### Compression panel
+
+```text
+Original input
+AICL output
+Decoded output
+```
+
+### Metrics
+
+Show:
+
+```text
+Original characters
+AICL characters
+
+Original UTF-8 bytes
+AICL UTF-8 bytes
+
+Original tokens
+AICL tokens
+
+TOKEN REDUCTION
+TOKEN RATIO
+```
+
+Make TOKEN REDUCTION the primary metric.
+
+Example:
+
+```text
+TOKEN REDUCTION
+██████████████████░░ 87.4%
+
+12.8k → 1.61k tokens
+```
+
+---
+
+# 18. VOCABULARY INSPECTOR
+
+Add a table:
+
+```text
+Symbol | Meaning | Frequency | Source Tokens | AICL Tokens | Savings
+```
+
+Example:
+
+```text
+⟟ | language model | 84 | 3 | 1 | 2
+⟐ | authentication failed | 31 | 4 | 1 | 3
+```
+
+Allow sorting by:
+
+```text
+frequency
+token savings
+total corpus savings
+symbol cost
+```
+
+This is extremely important for debugging.
+
+---
+
+# 19. BENCHMARK MODE
+
+Create a benchmark command.
+
+Example:
+
+```bash
+node aicl.js benchmark corpus.txt vocab.json
+```
+
+Output:
+
+```text
+AICL BENCHMARK
+
+Corpus
+-------------------------
+Characters:        45,365
+
+Original
+-------------------------
+Characters:        45,365
+UTF-8 bytes:       47,102
+Tokens:            12,481
+
+AICL
+-------------------------
+Characters:        18,421
+UTF-8 bytes:       51,332
+Tokens:             4,982
+
+RESULT
+-------------------------
+Character reduction: 59.40%
+Byte reduction:     -8.98%
+TOKEN REDUCTION:    60.09%
+TOKEN RATIO:        2.51x
+```
+
+The benchmark must make it impossible to confuse character compression with actual AI-token compression.
+
+---
+
+# 20. TARGETS
+
+Do NOT fake results or optimize the displayed metric.
+
+Our experimental targets are:
+
+### Stage 1
+
+```text
+> 20% token reduction
+```
+
+### Stage 2
+
+```text
+> 40%
+```
+
+### Stage 3
+
+```text
+> 60%
+```
+
+### Extreme research target
+
+```text
+> 80%
+```
+
+The original idea of:
+
+```text
+2000 chars → 20–50 chars
+```
+
+should be treated as a **research goal**, not an assumption that ordinary lossless English text can achieve this.
+
+If impossible on a given corpus, report the actual result.
+
+---
+
+# 21. TRAINING / INFERENCE SEPARATION
+
+A critical requirement:
+
+The model/harness should NOT need to retrain the vocabulary every time.
+
+Training:
+
+```text
+corpus
+↓
+AICL vocabulary
+↓
+vocab.json
+```
+
+Runtime:
+
+```text
+English
+↓
+AICL encoder
+↓
+AICL text
+↓
+LLM
+```
+
+And when receiving output:
+
+```text
+AICL
+↓
+decoder
+↓
+English
+```
+
+The runtime encoder/decoder should only need:
+
+```text
+vocab.json
+```
+
+---
+
+# 22. HARNESS COMPATIBILITY
+
+Design the project so it can later become an LLM middleware layer:
+
+```text
+User prompt
+    ↓
+AICL encoder
+    ↓
+compact prompt
+    ↓
+LLM API
+    ↓
+AICL response
+    ↓
+AICL decoder
+    ↓
+User
+```
+
+Expose a simple API:
+
+```js
+const aicl = require("./src");
+
+const compact = aicl.encode(text, vocab);
+const original = aicl.decode(compact, vocab);
+```
+
+Also expose:
+
+```js
+aicl.train(corpus, options)
+aicl.encode(text, vocab)
+aicl.decode(text, vocab)
+aicl.benchmark(text, vocab)
+aicl.tokenize(text)
+```
+
+---
+
+# 23. DO NOT ASSUME SEMANTIC COMPRESSION
+
+AICL v0.4 is initially:
+
+> Lossless symbolic/token compression.
+
+Do NOT replace concepts with semantic abstractions unless they are explicitly reversible.
+
+For example:
+
+```text
+"The cat is sitting on the mat"
+```
+
+must NOT become:
+
+```text
+CAT+SIT+MAT
+```
+
+unless the system can losslessly reconstruct the original text.
+
+Semantic compression can be researched later as AICL v1.x.
+
+---
+
+# 24. TESTING
+
+Create automated tests.
+
+Minimum:
+
+```text
+100+ round-trip cases
+```
+
+Test:
+
+```text
+normal English
+long paragraphs
+repeated text
+rare words
+numbers
+URLs
+code
+JSON
+Markdown
+emoji
+Unicode
+mixed languages
+uppercase
+newlines
+tabs
+empty strings
+very long strings
+```
+
+Also test that:
+
+```text
+AICL encoding never silently loses data.
+```
+
+---
+
+# 25. PERFORMANCE
+
+The encoder needs to eventually handle large prompts efficiently.
+
+Avoid:
+
+```text
+O(text × vocabulary)
+```
+
+where possible.
+
+Use:
+
+```text
+trie
+radix tree
+hash indexes
+prefix maps
+```
+
+for candidate lookup.
+
+The optimizer can be expensive during vocabulary training.
+
+Runtime encoding should be fast.
+
+---
+
+# 26. SECURITY / ROBUSTNESS
+
+Do not execute anything contained in the corpus.
+
+Treat corpus data as untrusted text.
+
+Do not use `eval`.
+
+Do not dynamically execute vocabulary contents.
+
+Validate imported vocabulary JSON.
+
+Prevent malformed symbols from breaking decoding.
+
+---
+
+# 27. README
+
+Write a proper README explaining:
+
+```text
+What AICL is
+Why Unicode alone doesn't equal compression
+Why tokenizer cost matters
+How vocabulary training works
+How to train
+How to encode
+How to decode
+How to benchmark
+How to add a tokenizer
+How the harness integration will work
+Known limitations
+```
+
+Explicitly explain:
+
+> Unicode character count is NOT the same thing as LLM token count.
+
+---
+
+# 28. DEVELOPMENT ORDER
+
+Do this in stages.
+
+### Phase 1
+
+Refactor current v0.3.
+
+### Phase 2
+
+Add tokenizer abstraction.
+
+### Phase 3
+
+Add symbol cost benchmarking.
+
+### Phase 4
+
+Implement cost-aware vocabulary trainer.
+
+### Phase 5
+
+Implement dynamic-programming encoder.
+
+### Phase 6
+
+Implement exact decoder.
+
+### Phase 7
+
+Implement benchmark system.
+
+### Phase 8
+
+Rebuild HTML UI.
+
+### Phase 9
+
+Add automated tests.
+
+### Phase 10
+
+Benchmark against the existing v0.3 implementation.
+
+---
+
+# 29. DO NOT DELETE THE OLD VERSION
+
+Keep the existing v0.3 implementation available.
+
+Create:
+
+```text
+v0.3/
+v0.4/
+```
+
+or otherwise preserve the old implementation.
+
+We need to compare:
+
+```text
+v0.3 character compression
+vs
+v0.4 tokenizer compression
+```
+
+on the SAME corpus and SAME test inputs.
+
+---
+
+# 30. FINAL ACCEPTANCE CRITERIA
+
+Do not consider the implementation complete until:
+
+### Correctness
+
+```text
+encode → decode
+```
+
+is lossless for the test suite.
+
+### Vocabulary
+
+Vocabulary can be trained automatically.
+
+### Optimization
+
+Vocabulary selection considers actual tokenizer cost.
+
+### Encoding
+
+Encoder chooses the globally cheapest segmentation where practical.
+
+### Metrics
+
+UI and CLI show:
+
+```text
+characters
+bytes
+tokens
+token reduction
+```
+
+### Benchmark
+
+v0.3 vs v0.4 comparison works.
+
+### Architecture
+
+Tokenizer backends are pluggable.
+
+### Runtime
+
+A trained vocabulary can be reused without retraining.
+
+### Documentation
+
+README explains the entire system.
+
+---
+
+## MOST IMPORTANT RULE
+
+**DO NOT chase impressive-looking character compression numbers.**
+
+A result like:
+
+```text
+293 chars → 188 chars
+```
+
+is meaningless if:
+
+```text
+293 chars → 300 tokenizer tokens
+188 chars → 500 tokenizer tokens
+```
+
+The real objective is:
+
+```text
+293 English tokens
+        ↓
+100 AICL tokens
+```
+
+while preserving:
+
+```text
+# JavaScript: The Language That Changed Web Development
+
+JavaScript is one of the most important programming languages in modern software development. It began as a relatively small scripting language designed to make web pages interactive, but over the years it evolved into a general-purpose language capable of running inside web browsers, servers, desktop applications, mobile applications, command-line tools, embedded systems, and many other environments. Its history is closely connected to the history of the modern web, and its flexibility has made it one of the most widely used programming languages in the world.
+
+When a user opens a modern website, JavaScript may be responsible for almost everything that happens after the initial page loads. Buttons can respond to clicks, forms can validate information, menus can open and close, animations can run smoothly, data can be retrieved from remote servers, and entire interfaces can update without requiring a complete page reload. These capabilities are possible because JavaScript can communicate with the browser through APIs such as the Document Object Model, commonly called the DOM.
+
+The basic syntax of JavaScript is relatively approachable. A variable can be created with `let`, `const`, or, in older code, `var`. For example, `const name = "Alex";` creates a constant containing a string. A program can perform calculations with numbers, combine strings, compare values, and make decisions using conditional statements. A simple condition might look like `if (age >= 18) { ... }`. JavaScript also supports loops, functions, objects, arrays, classes, modules, and many other programming concepts.
+
+One of the characteristics that makes JavaScript interesting is its dynamic nature. Variables do not require a fixed type declaration in ordinary JavaScript code. The value stored in a variable can be a string, number, boolean, object, array, function, `null`, or `undefined`. This flexibility can make development faster because programmers can write code without constantly specifying types. At the same time, dynamic typing can introduce bugs when a program becomes large or complicated. Developers therefore need to understand how JavaScript converts and compares different types.
+
+For example, the expression `5 + 5` produces the number `10`, while `"5" + 5` produces the string `"55"`. This behavior happens because the plus operator can perform either numerical addition or string concatenation depending on its operands. JavaScript also provides strict equality with `===`, which checks both value and type. Using `5 === "5"` returns `false`, while `5 == "5"` returns `true` because the loose equality operator performs type conversion. Modern JavaScript development generally favors strict equality because it makes program behavior easier to reason about.
+
+Functions are another central part of JavaScript. A function represents reusable behavior. It can receive arguments, perform operations, and return a result. A traditional function can be written as `function add(a, b) { return a + b; }`. JavaScript also supports arrow functions, allowing the same idea to be expressed as `const add = (a, b) => a + b;`. Functions can be stored inside variables, passed to other functions, returned from functions, and placed inside objects. This makes JavaScript a powerful language for functional programming patterns.
+
+Arrays are used to store ordered collections of values. An array might contain numbers such as `[1, 2, 3, 4]`, strings such as `["red", "green", "blue"]`, or complex objects. JavaScript provides many built-in array methods. `map()` can transform every element, `filter()` can select elements that satisfy a condition, `find()` can locate an element, and `reduce()` can combine many values into a single result. These methods allow developers to express data-processing operations concisely.
+
+Objects provide another important structure. An object contains properties and values. For example, a user could be represented by `{ name: "Alex", age: 20, active: true }`. Properties can be accessed with dot notation, such as `user.name`, or bracket notation, such as `user["name"]`. Objects can also contain functions, which are often called methods when they belong to an object. Modern JavaScript applications rely heavily on objects because they provide a natural way to represent structured information.
+
+The language has changed considerably since its early days. Modern JavaScript includes features such as template literals, destructuring, spread syntax, optional chaining, nullish coalescing, promises, async functions, modules, iterators, generators, private class fields, and many other improvements. These features were introduced to make the language more expressive and to solve problems that developers encountered as applications became larger.
+
+Template literals make string construction easier. Instead of combining multiple strings manually, developers can write something like `Hello, ${name}!` inside backticks. Destructuring allows values to be extracted from arrays and objects in a compact way. For example, `const { name, age } = user;` creates variables from properties of an object. Spread syntax, written with three dots, can copy or combine arrays and objects. These features reduce repetitive code and often make programs easier to read.
+
+Asynchronous programming is especially important in JavaScript. A browser cannot afford to freeze every time an application waits for a network request, file operation, timer, or other slow task. JavaScript therefore provides mechanisms for handling operations that finish later. Promises are one of the most common mechanisms. A promise represents a value that may become available in the future. Developers can use `.then()` and `.catch()` to handle successful and failed operations, or use `async` and `await` for a syntax that resembles synchronous code.
+
+Consider a program that needs to retrieve information from an API. Instead of blocking the entire application while waiting for the server, JavaScript can send the request and continue handling other work. When the response arrives, the promise is resolved and the program continues from the appropriate point. This model is essential for modern web applications because communication with external services is extremely common.
+
+The `fetch()` API is frequently used for HTTP requests. A developer might write `const response = await fetch(url);` and then process the returned response. If the server sends JSON data, `await response.json()` can convert that data into JavaScript values. A complete application might retrieve user profiles, product information, messages, weather data, or configuration information from an API.
+
+JavaScript also uses an event-driven programming model. Browsers generate events when users interact with a page. A mouse click, keyboard press, touch gesture, form submission, page load, or pointer movement can trigger an event. JavaScript can register event listeners to respond to these actions. For example, `button.addEventListener("click", handler);` tells the browser to execute a function when the button is clicked.
+
+The DOM provides JavaScript with a representation of the HTML document. Through the DOM, a program can find elements, modify their text, change attributes, update styles, create new elements, and remove existing elements. This is one of the foundations of interactive web development. A static HTML document can therefore become a dynamic application controlled by JavaScript.
+
+However, developers do not always manipulate the DOM directly. Modern frameworks and libraries provide higher-level abstractions for building interfaces. React, Vue, Angular, Svelte, and other technologies have become popular because they help developers organize complex user interfaces. These tools often encourage component-based architecture, where an application is divided into smaller reusable pieces.
+
+React, for example, allows developers to create components that describe parts of an interface. A component can receive properties, maintain state, respond to events, and render other components. Instead of manually changing dozens of DOM elements, developers can describe what the interface should look like for a particular state, and the framework can handle the necessary updates.
+
+JavaScript is not limited to browsers. Node.js allows JavaScript to run outside the browser using the V8 JavaScript engine and a collection of system APIs. This made it possible to use JavaScript for backend development, command-line programs, automation, servers, and other tasks that traditionally required different programming languages.
+
+A Node.js server can listen for HTTP requests, communicate with databases, read files, process data, authenticate users, and return responses. Frameworks such as Express, Fastify, NestJS, and others provide additional tools for organizing server-side applications. A typical web service might expose endpoints such as `/users`, `/products`, `/login`, or `/api/messages`.
+
+The popularity of Node.js also created a huge ecosystem of packages. The npm registry contains an enormous number of reusable JavaScript packages. Developers can install dependencies with commands such as `npm install`, define project metadata in `package.json`, and execute scripts through npm. Alternative package managers such as Yarn, pnpm, and Bun are also commonly used.
+
+Package management provides enormous productivity benefits, but it also introduces complexity. A project may depend on hundreds of direct and indirect packages. Developers must consider version compatibility, security vulnerabilities, package maintenance, bundle size, and licensing. Lock files such as `package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml` help ensure that installations remain reproducible.
+
+Modern JavaScript development often involves TypeScript as well. TypeScript is a language built on JavaScript that adds a static type system and other development features. A programmer can write `function add(a: number, b: number): number { return a + b; }`, allowing development tools to detect many mistakes before the program runs. TypeScript code is generally transformed into JavaScript before execution.
+
+Static typing can be particularly valuable in large projects. If a function expects a user object with specific properties, a type definition can document that structure and allow the editor to detect incorrect usage. Autocomplete and refactoring tools can also become more powerful when the development environment understands the shape of data.
+
+Testing is another important part of JavaScript development. Software can contain bugs even when the code appears correct. Automated tests help developers verify behavior repeatedly. Unit tests typically examine small pieces of functionality, while integration tests verify that multiple components work together. End-to-end tests can simulate real user interactions with an application.
+
+Popular testing tools include Jest, Vitest, Mocha, Playwright, and Cypress. The exact choice depends on the project's requirements. A good testing strategy can reduce the risk of accidentally breaking existing functionality while adding new features.
+
+Performance is also an important consideration. JavaScript applications can become slow when they perform unnecessary calculations, manipulate the DOM excessively, create too many objects, or download large amounts of code. Developers can use browser developer tools to inspect network requests, CPU usage, memory consumption, and rendering performance.
+
+Code splitting is one technique used to improve application startup time. Instead of downloading an entire application at once, the browser can load only the code required for the current page and retrieve additional modules when needed. Lazy loading, caching, compression, image optimization, and efficient rendering can further improve performance.
+
+Security must never be ignored. JavaScript applications often process user-controlled data, communicate with servers, and handle authentication information. Common problems include cross-site scripting, insecure access control, injection attacks, unsafe dependency usage, and accidental exposure of secrets. Developers should validate data, escape untrusted content where appropriate, use secure authentication practices, and keep dependencies updated.
+
+One common mistake is placing private API keys directly into frontend JavaScript. Code delivered to a browser should be considered visible to the user. If a secret must remain private, it generally belongs on a trusted backend rather than inside client-side code.
+
+JavaScript's flexibility is both a strength and a challenge. There are often many ways to accomplish the same task. One developer may prefer classes, another may prefer functions and composition, while another may rely heavily on framework-specific patterns. There is rarely a single universal solution. Good engineering therefore requires more than knowing syntax; it requires understanding trade-offs.
+
+Readable code is especially valuable. Variable names should communicate intent, functions should have clear responsibilities, and unnecessary complexity should be avoided. A short program is not automatically a good program. Sometimes a few extra lines make behavior much easier to understand. Comments can be useful when they explain why something is done rather than merely repeating what the code already says.
+
+Debugging is an essential programming skill. When a program fails, developers need to determine where the problem occurs, what values exist at that point, and what assumptions were incorrect. Browser developer tools provide breakpoints, console output, network inspection, storage inspection, and performance profiling. Server-side applications can use logs, debuggers, monitoring systems, and error tracking services.
+
+Learning JavaScript therefore involves more than memorizing commands. A beginner should understand variables, values, conditions, loops, functions, arrays, objects, and modules before moving into more complicated frameworks. After the fundamentals become comfortable, asynchronous programming, APIs, DOM manipulation, testing, and application architecture become easier to understand.
+
+A useful learning project might begin as a simple calculator. It could then evolve into a to-do list, weather dashboard, note-taking application, chat interface, or small game. Each project introduces new problems. A calculator teaches event handling and arithmetic. A to-do application introduces arrays, objects, state, and storage. An API-driven application introduces asynchronous requests and error handling.
+
+Eventually, developers learn that programming is largely about managing complexity. A small script can be written quickly, but a production application may contain thousands or millions of lines of code. Architecture, modularity, testing, documentation, version control, and collaboration become increasingly important as the size of a project increases.
+
+Git is commonly used to track changes in JavaScript projects. Developers can create branches, commit changes, merge work, review differences, and collaborate through platforms such as GitHub, GitLab, and other hosting services. Version control makes it possible to experiment safely and return to earlier versions when necessary.
+
+The future of JavaScript will likely continue to involve both browsers and environments beyond browsers. Web applications are becoming increasingly capable, with technologies for graphics, audio, real-time communication, offline functionality, and sophisticated user interfaces. JavaScript and related technologies continue to adapt to these requirements.
+
+Despite the appearance of newer languages and frameworks, JavaScript remains deeply embedded in the web platform. Every major browser supports it, and an enormous ecosystem surrounds it. Learning JavaScript therefore provides not only knowledge of one programming language but also an introduction to the architecture of the modern web.
+
+Ultimately, JavaScript is successful because it sits at an important intersection between simplicity, flexibility, and capability. A beginner can write a working program after learning only a few concepts, while experienced developers can build complex systems using advanced language features and extensive ecosystems. Its imperfections are well known, but its influence is undeniable.
+
+The most important lesson for a JavaScript developer is not to memorize every method or syntax feature. Documentation exists for that. The deeper skill is learning how to break a problem into smaller parts, understand the data involved, choose appropriate tools, handle failure, test assumptions, and communicate clearly through code. Once those skills develop, JavaScript becomes more than a scripting language. It becomes a practical tool for turning ideas into working software.
+
+decode(encode(text)) === text
+
+
+# JavaScript: The Language That Built the Modern Web
+
+## Introduction
+
+JavaScript is the foundational programming language of the interactive web. Alongside HyperText Markup Language (HTML) and Cascading Style Sheets (CSS), JavaScript forms the core triad of client-side web development. While HTML provides the semantic structure of a web page and CSS defines its visual presentation, JavaScript provides behavior, logic, and dynamic interactivity.
+
+Over the three decades since its creation in 1995, JavaScript has expanded far beyond simple browser scripts. Today, it powers complex single-page web applications (SPAs), server-side infrastructure, mobile application frameworks, desktop software, database systems, internet of things (IoT) hardware, and machine learning pipelines.
+
+Understanding JavaScript requires examining its unique historical context, fundamental mechanics, paradigm flexibility, execution runtime internals, ecosystem evolution, and contemporary design patterns.
+
+---
+
+## 1. History and Evolution
+
+### The Birth of JavaScript
+In May 1995, Brendan Eich, then an engineer at Netscape Communications, created JavaScript in just ten days. Originally codenamed *Mocha*, then renamed *LiveScript*, and finally *JavaScript*, the language was shipped inside Netscape Navigator 2.0.
+
+The marketing team at Netscape chose the name "JavaScript" to piggyback on the immense popularity of Sun Microsystems' Java language at the time. Despite the shared prefix and similar C-like syntax, Java and JavaScript are entirely distinct languages with fundamentally different design paradigms, type systems, memory management models, and target runtime environments.
+
+### Standardisation and ECMAScript
+To prevent fragmentation across competing web browsers—most notably Microsoft Internet Explorer, which introduced its own reverse-engineered variant called JScript—Netscape submitted the language specification to ECMA International for standardization in late 1996.
+
+This standardization work led to the formal specification known as **ECMAScript** (officially ECMA-262). Today, JavaScript is a dialect and implementation of the ECMAScript standard.
+
+### The Innovation Milestones
+1. **ECMAScript 1–3 (1997–1999):** Established core language primitives, regex capabilities, exception handling, and basic object mechanics.
+2. **AJAX Revolution (2005):** Jesse James Garrett coined the term *AJAX* (Asynchronous JavaScript and XML). The `XMLHttpRequest` API enabled web pages to retrieve data from servers asynchronously without triggering full-page reloads. This spawned the Web 2.0 era, giving rise to applications like Google Maps and Gmail.
+3. **ECMAScript 5 (2009):** Introduced Strict Mode (`'use strict'`), native JSON support, array iteration primitives (`map`, `filter`, `reduce`), and property descriptors.
+4. **Node.js (2009):** Created by Ryan Dahl, Node.js ported Google’s open-source V8 JavaScript engine out of the browser into a standalone server application runtime. This enabled JavaScript developers to write full-stack applications in a unified language.
+5. **ECMAScript 2015 / ES6 (2015):** The largest structural modernization of the language. Introduced lexical scoping (`let`, `const`), class syntax, arrow functions, promises, modules (`import`/`export`), template literals, destructuring, and iterators.
+6. **Modern Annual Releases (ES2016+):** Shifted to an annual release cadence managed by ECMA Technical Committee 39 (TC39). Features now advance through a standardized 4-stage proposals lifecycle before incorporation. Recent highlights include async/await, optional chaining (`?.`), nullish coalescing (`??`), BigInt, Private Class Fields, and Top-level await.
+
+---
+
+## 2. Core Language Fundamentals
+
+### Variables and Lexical Scoping
+JavaScript handles variable bindings using three keywords: `var`, `let`, and `const`.
+
+*   **`var`:** Function-scoped or globally-scoped. Supports hoisting (variables are declared at the top of their enclosing scope before code executes, initialized with `undefined`). `var` permits redeclaration and mutation, which frequently leads to subtle scope-leak bugs inside loops and conditionals.
+*   **`let`:** Block-scoped. Introduced in ES6. `let` supports re-assignment but prevents re-declaration in the same block. It exists in a "Temporal Dead Zone" (TDZ) from the block's start until the declaration line is executed.
+*   **`const`:** Block-scoped. Requires immediate initialization during declaration and prevents reassignment of the binding. Note that `const` guarantees *immutable bindings*, not *immutable values*; properties of an object or elements of an array bound with `const` can still be mutated.
+
+```javascript
+function scopeExample() {
+  if (true) {
+    var functionScoped = "I am accessible outside this block";
+    let blockScoped = "I am trapped inside this block";
+    const constantBlock = { mutableProperty: true };
+    
+    constantBlock.mutableProperty = false; // Allowed
+  }
+  
+  console.log(functionScoped); // Logs successfully
+  // console.log(blockScoped); // ReferenceError
+}
+
+```
+
+Build the system scientifically. Measure everything. Do not fake or assume compression. If an approach makes Unicode smaller but tokenizer usage worse, reject it.
+
+Start by inspecting the existing AICL v0.3 codebase, identify its weaknesses, then implement v0.4 incrementally and run benchmarks after every major change.
+Writing a essay of 80,000 to 140,000 letters (which is roughly **12,000 to 22,000 words**—the length of a complete academic monograph, short book, or master's thesis) exceeds the real-time processing and output limits of a single response.
+
+To help you produce a comprehensive paper of this scale, here is a complete, publication-ready **outline, structural blueprint, and fully written sample opening chapter** for a long-form essay on the topic: **"The Evolution of Human Language: From Biological Foundations to AI Models."**
+
+---
+
+# The Evolution of Human Language: From Biological Foundations to AI Models
+
+## Structural Blueprint (For a 15,000–20,000 Word Monograph)
+
+* **Chapter 1: The Biological and Evolutionary Roots of Language**
+* *1.1 Anatomical Adaptations (Laryngeal Descent, Vocal Tract, and Hyoid Bone)*
+* *1.2 The Genetic Matrix: FOXP2 and the Polygenic Reality of Speech*
+* *1.3 Cognitive Exaptation: From Gestural Communication to Symbolic Thought*
+
+
+* **Chapter 2: The Emergence of Linguistic Structure**
+* *2.1 Universal Grammar vs. Emergentism: The Chomskyan Revolution and Its Critics*
+* *2.2 Phonetics, Phonology, and Morphology: Building Blocks of Meaning*
+* *2.3 Syntax and Recursion: The Infinite Use of Finite Means*
+
+
+* **Chapter 3: Sociolinguistics and the Dynamics of Language Change**
+* *2.1 Historical Linguistics and Comparative Method: Mapping Language Families*
+* *2.2 Pragmatics and Context: How Culture Shapes Syntax and Semantics*
+* *2.3 Language Death and Revitalization in the Digital Age*
+
+
+* **Chapter 4: The Digital Shift: Formalizing Language for Machines**
+* *4.1 Early Computational Linguistics: Rule-Based Systems and Context-Free Grammars*
+* *4.2 Statistical Natural Language Processing and Vector Embeddings*
+* *4.3 Neural Architectures: From Recurrent Neural Networks to Transformers*
+
+
+* **Chapter 5: Large Language Models and the Future of Meaning**
+* *5.1 The Transformer Architecture and Attention Mechanisms*
+* *5.2 Statistical Mimicry vs. Genuine Understanding: The Grounding Problem*
+* *5.3 The Hybrid Horizon: Merging Human Neurobiology with Synthetic Language*
+
+
+
+---
+
+## Chapter 1: The Biological and Evolutionary Roots of Language
+
+### 1.1 Anatomical Adaptations
+
+The emergence of human language represents one of the most significant evolutionary transitions in the history of terrestrial life. Unlike animal communication systems, which are largely fixed, context-bound, and restricted to immediate emotional or environmental states, human language possesses the unique capacity for open-ended compositionality, displacement, and recursive abstraction. Understanding how this capacity evolved requires examining the physiological modifications that distinguished *Homo sapiens* from other hominins and primates.
+
+Central to this transformation was the modification of the vocal tract. In non-human primates, the larynx rests high in the neck, allowing simultaneous breathing and swallowing but severely restricting the phonetic inventory. Over evolutionary time, human hominin development led to the descent of the larynx into the neck, creating a dual-chambered vocal tract comprising the oral cavity and the pharynx. This right-angled vocal tract configuration allowed the tongue to alter the cross-sectional area of both chambers independently, enabling the precise articulation of distinct acoustic formants, notably the cardinal vowels (/i/, /u/, /a/).
+
+Alongside laryngeal lowering came crucial adjustments to the hyoid bone, the thoracic spinal cord, and fine motor neural pathways controlling the respiration rates required for sustained vocalization. The enlargement of the thoracic spinal canal in *Homo sapiens* and Neanderthals, compared to earlier australopithecines, reflects heightened neural control over intercostal muscles, enabling the sustained, modulated exhalation necessary for fluid speech.
+
+```
++-----------------------------------------------------------------------+
+|                       EVOLUTIONARY ADAPTATION                         |
++-----------------------------------------------------------------------+
+|  Vocal Tract Descent  --> Enables distinct acoustic formant modulation|
+|  Hyoid Restructuring  --> Anchors tongue muscles for precise speech    |
+|  Thoracic Expansion   --> Grants fine respiration control for phrasing |
++-----------------------------------------------------------------------+
+
+```
+
+### 1.2 The Genetic Matrix
+
+While anatomical alterations provided the physical instrument for speech, genetic mutations laid the groundwork for the underlying neural circuitry. In the late 20th century, the discovery of the *FOXP2* gene—often colloquially termed the "language gene"—offered the first molecular window into the heredity of speech. Mutations in *FOXP2* result in developmental verbal dyspraxia, characterized by severe difficulties in mastering the motor coordination required for speech alongside deficits in grammatical processing.
+
+However, modern evolutionary genetics demonstrates that *FOXP2* is not a singular "blueprint" for language. Rather, it acts as a transcription factor regulating hundreds of downstream genes involved in neural plasticity, basal ganglia development, and synaptic connectivity. The evolutionary sweep that fixed the modern human variant of *FOXP2* approximately 200,000 years ago coincided with broader shifts in brain globularization, expanding the parietal and cerebellar regions associated with complex motor planning and symbolic representation. Language is fundamentally polygenic, relying on interconnected neural networks rather than an isolated genetic switch.
+
+### 1.3 Cognitive Exaptation
+
+Beyond biology, language arose through cognitive exaptation—a process where traits evolved for one function are co-opted for another. Before humans spoke, they engaged in complex gestural communication. The mirror neuron system, active both when executing an action and when observing another perform that same action, likely served as the neural substrate for intentional gesture.
+
+As social groups grew larger, visual gestures became limited by line-of-sight and physical range. Vocalizations, initially used alongside gestures, gradually inherited the symbolic workload. Through this transition, iconicity (direct representation) gave way to arbitrariness (where the acoustic sound of a word bears no intrinsic connection to its meaning). This shift allowed human cognition to decouple from immediate physical environments, opening the door to abstract thought, history, myth, and structural logic.
+
+---
+
+
+# Chapter 2: The Emergence of Linguistic Structure
+
+## 2.1 Universal Grammar vs. Emergentism: The Chomskyan Revolution and Its Critics
+
+The mid-twentieth century witnessed a paradigm shift in cognitive science with Noam Chomsky’s formulation of Universal Grammar (UG). Countering the dominant behaviorist paradigms of B.F. Skinner—which reduced language acquisition to habit formation and stimulus-response reinforcement—Chomsky argued that the rapid, uniform acquisition of language by young children, despite impoverished and noisy environmental input, requires an innate, species-specific language faculty (*Language Acquisition Device* or LAD). Central to this generative framework is the "poverty of the stimulus" argument: children acquire complex, hierarchical grammatical principles that they could not have inferred purely from the linear sequence of adult speech. Under the classical UG model, human brains are hardwired with a core set of invariant principles alongside tunable parameters, allowing a child to construct a complete language system from minimal exposure.
+
+```
+                  +-----------------------------------+
+                  |      ENVIRONMENTAL INPUT          |
+                  |  (Noisy, Finite, Linear Speech)   |
+                  +-----------------------------------+
+                                    |
+                                    v
+                  +-----------------------------------+
+                  |      INNATIST FACULTY (UG)        |
+                  |  (Invariable Principles &         |
+                  |   Tunable Parameters)             |
+                  +-----------------------------------+
+                                    |
+                                    v
+                  +-----------------------------------+
+                  |      COMPLEX LINGUISTIC SYSTEM    |
+                  |  (Hierarchical, Recursive Syntax) |
+                  +-----------------------------------+
+
+```
+
+In contrast to the nativist paradigm, emergentist and usage-based models, championed by researchers like Michael Tomasello and Joan Bybee, contend that linguistic structure arises dynamically through domain-general cognitive mechanisms. Emergentism posits that human language is not driven by an isolated, genetically encoded grammar module, but rather emerges from the interaction of general cognitive capacities: pattern recognition, joint attention, statistical learning, and analogical reasoning. In this view, children do not set abstract parameters; instead, they construct abstract grammatical schemas incrementally out of concrete, item-based communicative experiences.
+
+Rather than viewing grammar as an innate blueprint pre-installed in human neurobiology, emergentism views it as a self-organizing system that stabilizes across generations through cultural transmission and functional communicative pressures.
+
+---
+
+## 2.2 Phonetics, Phonology, and Morphology: Building Blocks of Meaning
+
+Human language achieves its expressive power through a hierarchical cascade of structural layers, beginning with the raw acoustic signal and building toward complex conceptual structures. At the base of this architecture lies **phonetics**, the study of the physical production, transmission, and perception of speech sounds. The human vocal tract acts as a continuous acoustic pipe, producing a continuous stream of sound waves.
+
+The cognitive system discretizes this fluid acoustic signal into distinct abstract categories known as **phonemes**—the domain of **phonology**. Phonemes are the minimal distinctive units of sound capable of distinguishing meaning (such as the distinction between /p/ and /b/ in *pin* and *bin*). This transition from continuous acoustic physics to discrete mental categories represents a critical cognitive abstraction, allowing human memory to organize and store thousands of lexical items efficiently.
+
+```
++-----------------------------------------------------------------------------------+
+|                        THE HIERARCHICAL CASCAde OF STRUCTURE                      |
++-----------------------------------------------------------------------------------+
+|  Level       | Minimal Unit | Primary Function                                    |
+|--------------+--------------+-----------------------------------------------------|
+|  Phonetics   | Phones       | Physical acoustic signals and motor production      |
+|  Phonology   | Phonemes     | Abstract sound categories that distinguish meaning |
+|  Morphology  | Morphemes    | Minimal units carrying semantic or functional value |
++-----------------------------------------------------------------------------------+
+
+```
+
+These phonological units assemble into **morphemes**, the smallest units of language that carry distinct semantic or grammatical meaning. Morphology operates at the intersection of phonology and syntax, split into two main structural operations:
+
+* **Derivational Morphology:** Affixes modify the core meaning or lexical category of a base word (e.g., transforming the verb *compute* into the noun *computation*).
+* **Inflectional Morphology:** Words are modified to express grammatical relationships like tense, number, aspect, or case (e.g., adding *-ed* to form *computed*) without changing the fundamental lexical category.
+
+This combinatorial architecture operates under Wilhelm von Humboldt's famous principle: language makes "infinite use of finite means." Through **duality of patterning**—a structural property unique to human communication—a small set of meaningless acoustic elements (phonemes) combines to form thousands of meaningful units (morphemes), which in turn combine to generate an unbounded number of complex utterances.
+
+---
+
+## 2.3 Syntax and Recursion: The Infinite Use of Finite Means
+
+While phonology and morphology organize sounds into lexical units, **syntax** governs the rules by which words combine into phrases and sentences. Crucially, human syntax is structural rather than linear. Words in a sentence are not merely strung together like beads on a string; they are organized into nested, hierarchical constituents known as phrase-structure trees.
+
+```
+                       Sentence (S)
+                      /            \
+                     /              \
+         Noun Phrase (NP)         Verb Phrase (VP)
+            /        \               /         \
+    Determiner      Noun          Verb       Noun Phrase (NP)
+       (The)       (linguist)   (analyzed)      /        \
+                                            Determiner   Noun
+                                               (the)   (sentence)
+
+```
+
+The mathematical foundation of this hierarchical structure relies on **recursion**—the capacity to embed a constituent inside another constituent of the same type. In formal syntax, recursive operations allow a set of generative rules to re-apply to their own outputs endlessly:
+
+$$\text{VP} \rightarrow \text{V} + \text{CP}$$
+
+$$\text{CP} \rightarrow \text{C} + \text{S}$$
+
+$$\text{S} \rightarrow \text{NP} + \text{VP}$$
+
+Through recursive embedding, a clause can be nested inside another clause (*"John believes [that Mary said [that the experiment failed]]"*), creating theoretically infinite sentence lengths limited only by human working memory and processing limits.
+
+In their seminal 2002 paper, Marc Hauser, Noam Chomsky, and Tecumseh Fitch distinguished between the **Faculty of Language in the Broad sense (FLB)**—which includes the auditory, vocal, and conceptual systems shared with other animals—and the **Faculty of Language in the Narrow sense (FLN)**. They hypothesized that FLN consists solely of the computational mechanism for recursion (specifically the basic syntactic operation *Merge*). Under this hypothesis, recursion is the singular evolutionary innovation that separates human language from all non-human animal communication systems, enabling humans to project finite symbolic elements into an infinite cognitive landscape.
+
+---
