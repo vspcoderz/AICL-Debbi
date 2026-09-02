@@ -7,7 +7,11 @@ Usage:
     from tokenizer.bpe import BPETokenizer
     tok = BPETokenizer("tokenizer/vocabularies/sp_bpe_6k.model")
 """
-from sp_tokenizer import SPTokenizer as BPETokenizer
-from sp_tokenizer import train_sp as train_bpe
+try:
+    from .sp_tokenizer import SPTokenizer as BPETokenizer
+    from .sp_tokenizer import train_sp as train_bpe
+except ImportError:
+    from sp_tokenizer import SPTokenizer as BPETokenizer
+    from sp_tokenizer import train_sp as train_bpe
 
 __all__ = ["BPETokenizer", "train_bpe"]

@@ -22,12 +22,20 @@ import re
 from collections import Counter, defaultdict
 from typing import Dict, List, Tuple
 
-from aicl_tokenizer import (
-    ALPHABET_SOURCE,
-    AICLTokenizer,
-    generate_symbol_pool,
-    RESERVED,
-)
+try:
+    from .aicl_tokenizer import (
+        ALPHABET_SOURCE,
+        AICLTokenizer,
+        generate_symbol_pool,
+        RESERVED,
+    )
+except ImportError:
+    from aicl_tokenizer import (
+        ALPHABET_SOURCE,
+        AICLTokenizer,
+        generate_symbol_pool,
+        RESERVED,
+    )
 
 WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
 LETTER_RUN_RE = re.compile(r"[a-z]+")

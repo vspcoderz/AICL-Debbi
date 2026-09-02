@@ -18,7 +18,10 @@ from collections import Counter
 from typing import Dict, List, Tuple
 
 import sentencepiece as spm
-from sp_tokenizer import SPTokenizer
+try:
+    from .sp_tokenizer import SPTokenizer
+except ImportError:
+    from sp_tokenizer import SPTokenizer
 
 
 DELIM = "\x1f"

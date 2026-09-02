@@ -13,7 +13,11 @@ Usage:
                             "tokenizer/vocabularies/bpe_phrase_4k.json")
     # 4k = 85.2% (10k vocab, uint16), 60k = 90.3% (66k vocab, int32)
 """
-from bpe_phrase_tokenizer import BPhraseTokenizer as AICLForkTokenizer
-from bpe_phrase_tokenizer import train_phrase_vocab
+try:
+    from .bpe_phrase_tokenizer import BPhraseTokenizer as AICLForkTokenizer
+    from .bpe_phrase_tokenizer import train_phrase_vocab
+except ImportError:
+    from bpe_phrase_tokenizer import BPhraseTokenizer as AICLForkTokenizer
+    from bpe_phrase_tokenizer import train_phrase_vocab
 
 __all__ = ["AICLForkTokenizer", "train_phrase_vocab"]
