@@ -1,93 +1,53 @@
-# Debbi — BPE + AICL Fork • 90% Token Reduction
+# Debbi — BPE + AICL Fork
 
-**Debbi** is a 150M (→1B) GPT-style decoder with **BPE + AICL Fork** — BPE does the compression, AICL does the phrase intelligence.
-
-> **AICL** = frequent words/phrases → single Unicode symbol (reversible, `decode(encode(x))==x`)  
-> **BPE Fork** = BPE base + AICL phrase merge → **90%** token reduction
+**150M decoder, 90% token reduction.** BPE does compression, AICL adds phrase intelligence. Reversible: `decode(encode(x)) == x`.
 
 ![Benchmark](benchmark.png)
 
-*BPE 6k trained on `bpe_corpus` — Fork adds phrase merge (AICL idea) on BPE tokens — Higher = fewer tokens*
+| Tokenizer | Vocab | Reduction | Chars/token |
+|-----------|-------|-----------|-------------|
+| **BPE** | 6k | 78.2% | 4.59 |
+| **AICL Fork 4k** | 10k | **85.2%** | 6.78 |
+| **AICL Fork 60k** | 66k | **90.3%** | 10.31 |
+| AICL | 40k | 69.4% | 3.27 |
+| NORMAL | — | 88.5% | 8.7 |
 
-The research question:
+*BPE 6k trained on `bpe_corpus` 890k — Fork merges BPE token n-grams (AICL idea). Higher = fewer tokens.*
 
-> Can we beat BPE's 78% with AICL's phrase intelligence?
+---
 
-**Answer: Yes — 85% with 4k phrases (10k vocab), 90% with 60k phrases (66k vocab).**
-
-## Repository layout
-
-```
-debbie/
-├── README.md, PLAN.md
-├── tokenizer/            novel part: AICL encoder/decoder (pure Python)
-│   ├── aicl_tokenizer.py      reversible encode/decode, escape- & case-aware
-│   ├── train_vocab.py         learn a vocabulary: freq × chars_saved × bonus
-│   ├── vocabularies/          saved vocabulary JSONs
-│   └── tests/                 roundtrip suite: decode(encode(x)) == x
-├── benchmark/
-│   └── vs_bpe.py              AICL vs SentencePiece token ratio (honest)
-├── data/
-│   └── prepare_data.py        text -> corpus.bin (uint16 ids) + id_map.json
-├── model/                 standard decoder-only transformer
-│   ├── config.py               Debbi-150M defaults
-│   ├── transformer.py          RMSNorm + RoPE + SwiGLU, weight-tying, KV-cache gen
-│   ├── train.py                bf16/fp16, grad-checkpointing, resumable checkpoints
-│   └── generate.py             sample from a checkpoint
-└── notebooks/
-    └── 01_train_colab.ipynb    end-to-end free-T4 notebook
-```
-
-## Quick start
+### Quick start
 
 ```bash
-python -m unittest discover tokenizer/tests      # roundtrip: decode(encode(x)) == x
+# BPE (78%)
+python data/prepare_data.py --input data/code.txt --out-dir data --tokenizer bpe
 
-python tokenizer/train_vocab.py --input data/mycode.txt --output tokenizer/vocabularies/code-vocab.json --size 2000
+# AICL Fork 85% (10k vocab, recommended)
+python data/prepare_data.py --input data/code.txt --out-dir data --tokenizer bpe_phrase
 
-python benchmark/vs_bpe.py --corpus data/mycode.txt --size 2000
+# AICL Fork 90% (66k vocab)
+python data/prepare_data.py --input data/code.txt --out-dir data --tokenizer bpe_phrase --phrase-vocab tokenizer/vocabularies/bpe_phrase_60k.json
 
-python data/prepare_data.py --input data/mycode.txt --vocab tokenizer/vocabularies/code-vocab.json --out-dir data
-
-python model/train.py --nano --max-steps 50     # CPU smoke test on any machine
-
-python model/train.py                            # Debbi-150M on a T4
-python model/generate.py --ckpt checkpoints/debbi-150m/last.pt \
-    --vocab tokenizer/vocabularies/code-vocab.json --id-map data/id_map.json \
-    --prompt "def quicksort(arr):"
+# Train
+python model/train.py --nano --max-steps 50   # smoke test
+python model/train.py                          # 150M on T4
 ```
 
-### Debbi-150M config (~120M params, fits free T4 comfortably)
+### Tokenizers
 
-| | |
-|---|---|
-| dim / layers / heads | 768 / 12 / 12 |
-| FFN (SwiGLU) | 3072 |
-| max seq len | 1024 |
-| vocab size | from tokenizer (~4k) |
-| dtype | bfloat16 (float16 fallback) |
-| memory | ~1.5 GB weights+opt, ~3 GB activations w/ grad-checkpointing |
+```python
+from tokenizer.bpe import BPETokenizer          # BPE normal
+from tokenizer.aicl_fork import AICLForkTokenizer  # BPE+AICL 85-90%
+from tokenizer.aicl import AICLTokenizer        # AICL normal
+from tokenizer.normal import NormalTokenizer    # baseline
+```
 
-## The tokenizer, honestly
+### Layout
 
-AICL is a reversible compressor: `decode(encode(x)) == x` always (test suite).
-Savings come from replacing a *phrase-with-vocabulary*, *word*, or *char
-n-gram* with one Unicode symbol; spaces, newlines, case (↑/⇧), and literal
-symbol occurrences are all represented reversibly.
+```
+tokenizer/  bpe.py / aicl.py / aicl_fork.py / normal.py
+data/       prepare_data.py -> corpus.bin + id_map.json
+model/      config.py / train.py / generate.py
+```
 
-Two things that are **not** claimed:
-- “AICL beats BPE by 40–50%” is *unproven* until `vs_bpe.py` measures it on real
-  code. Symbols are 1 codepoint = 1 token for Debbi, but stock BPE tokenizers
-  can charge rare Unicode symbols 2–4 tokens — hence the benchmark comes first.
-- Character compression on prose is often small in practice (see the honest
-  percentage numbers `train_vocab.py` prints).
-
-## Training data
-
-`data/prepare_data.py` accepts any local text files (paste code, scraped files,
-or use `datasets`/The Stack — see notebook). For the MVP that is enough: the
-research value is in the tokenizer comparison, not dataset scale.
-
-## Status
-
-MVP in progress — see PLAN.md. Tokenizer roundtrip suite: green.
+MIT — see `PLAN.md` for roadmap.
