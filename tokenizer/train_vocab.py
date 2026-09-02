@@ -29,17 +29,20 @@ from aicl_tokenizer import (
     RESERVED,
 )
 
-WORD_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]*")
-LETTER_RUN_RE = re.compile(r"[a-z]+")
+WORD_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+LETTER_RUN_RE = re.compile(r"[a-z_]+")
 DIGIT_RUN_RE = re.compile(r"[0-9]+")
 # Extended: also capture runs of common punctuation + digits
 PUNCT_RUN_RE = re.compile(r"[._,\"'()`=:;\[\]{}<>|/+!@#&*?~\-]+")
-IDENTIFIER_RE = re.compile(r"[a-z][a-z0-9_]+")
+IDENTIFIER_RE = re.compile(r"[a-z_][a-z0-9_]+")
 
-BONUS = {"word": 1.0, "char": 1.0, "phrase": 1.35}
-MAX_PHRASE_WORDS = 6
-MAX_CHAR_GRAM = 6
+BONUS = {"word": 1.0, "char": 1.0, "phrase": 1.35, "indent": 1.5, "line": 1.4}
+MAX_PHRASE_WORDS = 10
+MAX_CHAR_GRAM = 12
 MIN_CHAR_GRAM = 1
+# Indent candidates for code (Python 4-space indent)
+INDENT_LEVELS = ["    ", "        ", "            ", "                ", "                    "]  # 4,8,12,16,20
+INDENT_NEWLINE = ["\n    ", "\n        ", "\n            ", "\n                "]
 
 
 def _tokenize_words(text: str) -> List[Tuple[int, str]]:
@@ -101,11 +104,32 @@ def count_candidates(text: str, min_freq: int) -> Dict[str, Tuple[str, int, floa
             PUNCT_SPACE[c1+c2] += 1
 
     cands: Dict[str, Tuple[str, int, float]] = {}
-    for g, f in PUNCT_SPACE.items():
+
+    # Indent candidates (code-specific, huge savings: 4 spaces -> 1 symbol saves 3)
+    for indent in INDENT_LEVELS + INDENT_NEWLINE:
+        if indent.startswith("\n"):
+            f = text.count(indent)
+        else:
+            f = folded.count(indent.lower())
         if f >= min_freq:
+            cands[indent] = ("indent", f, float(f * (len(indent) - 1) * BONUS["indent"]))
+
+    # Line-level phrases: entire stripped lines that repeat (e.g., "    return None")
+    line_counts = Counter(ln.strip().lower() for ln in text.split("\n") if ln.strip() and len(ln.strip()) >= 10)
+    for line_text, f in line_counts.items():
+        if f >= min_freq and len(line_text) >= 10 and " " in line_text:
+            cands[line_text] = ("line", f, float(f * (len(line_text) - 1) * BONUS["line"]))
+            for indent in ["    ", "        "]:
+                indented = indent + line_text
+                ff = text.lower().count(indented)
+                if ff >= min_freq:
+                    cands[indented] = ("line", ff, float(ff * (len(indented) - 1) * BONUS["line"]))
+    # Punct candidates added to same dict (don't overwrite indent)
+    for g, f in PUNCT_SPACE.items():
+        if f >= min_freq and g not in cands:
             cands[g] = ("punct_pair", f, float(f * 1 * BONUS["char"]))
     for g, f in PUNCT_PUNCT.items():
-        if f >= min_freq:
+        if f >= min_freq and g not in cands:
             cands[g] = ("punct_pair", f, float(f * 1 * BONUS["char"]))
     for w, f in word_counts.items():
         if f >= min_freq and len(w) >= 2:
@@ -143,8 +167,8 @@ def build_vocabulary(
     ranked = sorted(cands.items(), key=lambda kv: (-kv[1][2], kv[0]))
     ranked = ranked[:size]
 
-    pool = generate_symbol_pool(max(max_pool, size), skip=RESERVED)
-    if len(pool) < size:
+    pool = generate_symbol_pool(max(max_pool, size + len(ALPHABET_SOURCE) + 100), skip=RESERVED)
+    if len(pool) < size + len(ALPHABET_SOURCE):
         raise RuntimeError(f"symbol pool exhausted (wanted {size}, have {len(pool)})")
 
     rng = random.Random(seed)

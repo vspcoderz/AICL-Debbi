@@ -100,6 +100,9 @@ SYMBOL_RANGES: List[Tuple[int, int]] = [
     (0x0370, 0x04FF),  # Greek and Coptic + Cyrillic
     (0x0530, 0x058F),  # Armenian
     (0x10A0, 0x10FF),  # Georgian
+    (0x4E00, 0x9FFF),  # CJK Unified Ideographs (20k, for large vocab)
+    (0xAC00, 0xD7AF),  # Hangul Syllables (11k)
+    (0xE000, 0xF8FF),  # Private Use Area (6k)
 ]
 
 
