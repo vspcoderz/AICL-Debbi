@@ -43,12 +43,12 @@ def main() -> None:
     ap.add_argument("--input", required=True, help="text file(s), comma separated")
     ap.add_argument("--out-dir", default="data", help=f"writes corpus.bin + id_map.json ({BOS=} {EOS=})")
     ap.add_argument("--tokenizer", choices=["aicl", "bpe", "bpe_phrase"], default="bpe_phrase",
-                    help="tokenizer backend: aicl (legacy), bpe (SP), bpe_phrase (BPE+AICL phrase 90%, recommended)")
+                    help="tokenizer backend: aicl (legacy), bpe (SP 78%), bpe_phrase (BPE+AICL phrase 85%+ recommended)")
     ap.add_argument("--vocab", default=None, help="existing AICL vocab JSON (else train new) [aicl only]")
     ap.add_argument("--sp-model", default="tokenizer/vocabularies/sp_bpe_6k.model",
                     help="SentencePiece .model path [bpe* only]")
-    ap.add_argument("--phrase-vocab", default="tokenizer/vocabularies/bpe_phrase_60k.json",
-                    help="phrase vocab JSON [bpe_phrase only]")
+    ap.add_argument("--phrase-vocab", default="tokenizer/vocabularies/bpe_phrase_4k.json",
+                    help="phrase vocab JSON [bpe_phrase only] (4k=85.2% 10k vocab, 60k=90.3% 66k vocab)")
     ap.add_argument("--vocab-size", type=int, default=2000)
     ap.add_argument("--min-freq", type=int, default=2)
     args = ap.parse_args()
